@@ -41,6 +41,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --font-poppins: var(--font-poppins);
 }
 
 :root {
@@ -120,3 +121,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.chart-container {
+  transition: transform 0.1s ease;
+  will-change: transform;
+  }
+  .chart-container:hover {
+  transform: scale(1.02);
+  }
+  .dashboard > div > div > * {
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .site-selector button:nth-child(odd) {
+  width: calc(100% - 1px);
+  }
+  .site-selector button:nth-child(even) {
+  width: calc(100% - 2px);
+  }
+  
