@@ -50,17 +50,17 @@ const data = {
         },
         {
           title: "Performance",
-          url: "#",
+          url: "/dashboard/performance",
           icon: "performance", // Updated icon name
         },
         {
           title: "Reports",
-          url: "#",
+          url: "/dashboard/reports",
           icon: "reports", // Updated icon name
         },
         {
           title: "Settings",
-          url: "#",
+          url: "/dashboard/settings",
           icon: "settings", // Updated icon name
         },
         
