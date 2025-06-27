@@ -19,7 +19,7 @@ import {
 import { usePathname } from "next/navigation";
 import Link from "next/link"
 import {
-  LayoutDashboard,
+  Activity,
   Cpu,
   ClipboardPlus,
   Settings,
@@ -30,7 +30,7 @@ import {
 
 // Map icon string to Lucide icon component
 const iconMap: Record<string, React.ElementType> = {
-  dashboard: LayoutDashboard,
+  dashboard: Activity,
   performance: Cpu,
   reports: ClipboardPlus,
   settings: Settings,
@@ -46,7 +46,7 @@ const data = {
       url: "#",
       items: [
         {
-          title: "Dashboard",
+          title: "Real Time Overview",
           url: "/dashboard",
           icon: "dashboard", // You can replace with an actual icon component or import later
         },
@@ -84,7 +84,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <GalleryVerticalEnd className="size-4" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-300 bg-clip-text text-transparent">
                   SaaS Analytics Platform
                 </h1>
               </div>

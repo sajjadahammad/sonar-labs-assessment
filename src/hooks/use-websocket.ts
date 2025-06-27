@@ -60,7 +60,7 @@ export function useWebSocket() {
         const newData: AnalyticsData = JSON.parse(lastMessage.data);
 
         // Update data (limit to 1000 entries)
-        setData((prevData) => [...prevData.slice(-999), newData]);
+        setData((prevData) => [...prevData.slice(-1199), newData]);
 
         // Update sites
         setSites((prevSites) => {
@@ -95,7 +95,7 @@ export function useWebSocket() {
     setError('Using demo data - WebSocket server not available');
 
     const handleMockData = (mockData: AnalyticsData) => {
-      setData((prevData) => [...prevData.slice(-999), mockData]);
+      setData((prevData) => [...prevData.slice(-1199), mockData]);
       setSites((prevSites) => {
         const existingSiteIndex = prevSites.findIndex((s) => s.siteId === mockData.siteId);
         if (existingSiteIndex === -1) {
@@ -138,11 +138,15 @@ export function useWebSocket() {
     };
   }, [readyState, usingMockData, startMockDataStream]);
 
+  // Add isLoading: true if no data and not connected, else false
+  const isLoading = data.length === 0 && connectionStatus !== 'connected';
+
   return {
     data,
     sites,
     connectionStatus,
     error,
     usingMockData,
+    isLoading,
   };
 }

@@ -1,3 +1,4 @@
+'use client'
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
@@ -12,8 +13,11 @@ import {
 import { Ellipsis, Share2, Star, UserPlus } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { ThemeToggle } from "./ThemeToggle"
+import { ConnectionStatus } from "./ConnectionStatus"
+import { useWebSocket } from "@/hooks/use-websocket"
 
 export function SiteHeader() {
+    const {connectionStatus} = useWebSocket()
     const avatars = [
         { initials: "AL", image: null, backgroundColor: "#e6f3ff", textColor: "#4285f4" },
         { initials: "", image: "/api/placeholder/40/40", backgroundColor: "#f0f0f0", textColor: "#000000" },
@@ -41,6 +45,7 @@ export function SiteHeader() {
                             </BreadcrumbItem>
                         </BreadcrumbList>
                     </Breadcrumb>
+                    <ConnectionStatus status={connectionStatus} />
                     <div className="ml-auto">
                         <ThemeToggle/>
                         <div className="inline-flex mr-5">

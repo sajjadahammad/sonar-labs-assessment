@@ -1,14 +1,29 @@
+"use client";
 
-import { Card, CardContent } from "@/components/ui/card"
-import { SiteMetrics } from "@/types/analytics"
-import { TrendingUp, TrendingDown, Users, Eye, Clock, MousePointer } from "lucide-react"
-
+import { Card, CardContent } from "@/components/ui/card";
+import { SiteMetrics, AnalyticsData } from "@/types/analytics";
+import { TrendingUp, TrendingDown, Users, Eye, Clock, MousePointer } from "lucide-react";
 
 interface MetricsGridProps {
-  metrics: SiteMetrics | null
+  latestData: AnalyticsData | undefined;
 }
 
-export function MetricsGrid({ metrics }: MetricsGridProps) {
+export function MetricsGrid({ latestData }: MetricsGridProps) {
+
+
+  const metrics: SiteMetrics | null = latestData
+    ? {
+        totalPageViews: latestData.pageViews,
+        totalUniqueVisitors: latestData.uniqueVisitors,
+        avgSessionDuration: latestData.avgSessionDuration,
+        avgBounceRate: latestData.bounceRate,
+        pageViewsChange:0,
+        visitorsChange:  0,
+        sessionChange:0,
+        bounceRateChange: 0,
+      }
+    : null;
+
   if (!metrics) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -24,10 +39,8 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
           </Card>
         ))}
       </div>
-    )
+    );
   }
-
-  
 
   const metricCards = [
     {
@@ -58,14 +71,14 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       icon: MousePointer,
       color: "text-orange-600 dark:text-orange-400",
     },
-  ]
+  ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {metricCards.map((metric, index) => {
-        const Icon = metric.icon
-        const isPositive = metric.change > 0
-        const changeColor = isPositive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+        const Icon = metric.icon;
+        const isPositive = metric.change > 0;
+        const changeColor = isPositive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400";
 
         return (
           <Card key={index} className="border-0 shadow-lg bg-card/50 backdrop-blur hover:shadow-xl transition-shadow">
@@ -80,7 +93,9 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
                     ) : (
                       <TrendingDown className="h-3 w-3 text-red-600 dark:text-red-400" />
                     )}
-                    <span className={`text-xs font-medium ${changeColor}`}>{Math.abs(metric.change).toFixed(1)}%</span>
+                    <span className={`text-xs font-medium ${changeColor}`}>
+                      {Math.abs(metric.change).toFixed(1)}%
+                    </span>
                   </div>
                 </div>
                 <div className={`p-3 rounded-full bg-muted/50 ${metric.color}`}>
@@ -89,8 +104,8 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
               </div>
             </CardContent>
           </Card>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

@@ -5,15 +5,17 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Skeleton } from '@/components/ui/skeleton'
 import { ChartDataPoint } from '@/types/chart'
 import { SiteAnalyticsData } from '@/types/socket'
+import { useTheme } from 'next-themes'
 
 interface RealTimeChartProps {
   data: SiteAnalyticsData[]
   isLoading: boolean
-  isSocketConnected: boolean
   error: Error | null
 }
 
-export default function RealTimeChart({ data, isLoading, isSocketConnected, error }: RealTimeChartProps) {
+export default function RealTimeChart({ data, isLoading, error }: RealTimeChartProps) {
+    const { theme } = useTheme()
+  const isDark = theme === "dark"
   // Compute chart data
   const chartData: ChartDataPoint[] = useMemo(() => {
     if (!data || data.length === 0) return []
@@ -49,40 +51,37 @@ export default function RealTimeChart({ data, isLoading, isSocketConnected, erro
   return (
     <div className="h-[300px] w-full">
       {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis dataKey="time" className="text-xs fill-muted-foreground" tick={{ fontSize: 12 }} />
-            <YAxis className="text-xs fill-muted-foreground" tick={{ fontSize: 12 }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'hsl(var(--background))',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: '6px',
-              }}
-              formatter={(value, name) => [
-                value,
-                name === 'pageViews' ? 'Page Views' : 'Unique Visitors',
-              ]}
-            />
-            <Line
-              type="monotone"
-              dataKey="pageViews"
-              stroke="hsl(var(--primary))"
-              strokeWidth={2}
-              dot={false}
-              name="Page Views"
-            />
-            <Line
-              type="monotone"
-              dataKey="uniqueVisitors"
-              stroke="hsl(var(--primary))"
-              strokeWidth={2}
-              dot={false}
-              name="Unique Visitors"
-            />
-          </LineChart>
-        </ResponsiveContainer>
+         <ResponsiveContainer width="100%" height="100%">
+         <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+           <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#374151" : "#e5e7eb"} opacity={0.5} />
+           <XAxis
+             dataKey="time"
+             stroke={isDark ? "#9ca3af" : "#6b7280"}
+             fontSize={12}
+             tickLine={false}
+             axisLine={false}
+           />
+           <YAxis stroke={isDark ? "#9ca3af" : "#6b7280"} fontSize={12} tickLine={false} axisLine={false} />
+           <Tooltip
+             contentStyle={{
+               backgroundColor: isDark ? "#1f2937" : "#ffffff",
+               border: `1px solid ${isDark ? "#374151" : "#e5e7eb"}`,
+               borderRadius: "8px",
+               boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+             }}
+             labelStyle={{ color: isDark ? "#f3f4f6" : "#111827" }}
+           />
+           <Line
+             type="monotone"
+             dataKey='pageViews'
+             stroke='#3b82f6'
+             strokeWidth={2}
+             dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+             activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2 }}
+             animationDuration={300}
+           />
+         </LineChart>
+       </ResponsiveContainer>
       ) : (
         <div className="flex items-center justify-center h-full text-muted-foreground">
           <div className="text-center">
