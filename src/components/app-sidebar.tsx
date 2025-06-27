@@ -24,6 +24,8 @@ import {
   ClipboardPlus,
   Settings,
   Zap,
+  GalleryVerticalEnd,
+  ChevronsUpDown,
 } from "lucide-react"
 
 // Map icon string to Lucide icon component
@@ -37,7 +39,7 @@ const iconMap: Record<string, React.ElementType> = {
 
 // This is sample data.
 const data = {
-  versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
+  // versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
   navMain: [
     {
       title: "Dashboard",
@@ -74,11 +76,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <VersionSwitcher
-          versions={data.versions}
-          defaultVersion={data.versions[0]}
-        />
-        <SearchForm />
+      <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
+              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <GalleryVerticalEnd className="size-4" />
+              </div>
+              <div className="flex flex-col gap-0.5 leading-none">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  SaaS Analytics Platform
+                </h1>
+              </div>
+              
+            </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
@@ -96,12 +107,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       className={`${
                         pathname === item.url
                           ? "shadow-sm rounded-md font-medium border transition-all ease-in-out duration-200"
-                          : "text-gray-600"
+                          : "text-gray-600 "
                       }`}
                     >
-                      <SidebarMenuItem key={item.title}>
+                      <SidebarMenuItem key={item.title} className="">
                         <SidebarMenuButton asChild>
-                          <span className="flex items-center gap-2">
+                          <span className="flex items-center gap-2 ">
                             {Icon && <Icon className="w-4 h-4" aria-hidden="true" />}
                             <span>{item.title}</span>
                           </span>

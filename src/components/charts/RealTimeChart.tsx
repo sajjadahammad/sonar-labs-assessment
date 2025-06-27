@@ -76,7 +76,7 @@ export default function RealTimeChart({ data, isLoading, isSocketConnected, erro
             <Line
               type="monotone"
               dataKey="uniqueVisitors"
-              stroke="hsl(var(--chart-2))"
+              stroke="hsl(var(--primary))"
               strokeWidth={2}
               dot={false}
               name="Unique Visitors"

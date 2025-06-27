@@ -113,6 +113,148 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Color theme variations */
+[data-color-theme="blue"] {
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 98%;
+}
+
+[data-color-theme="green"] {
+  --primary: 142 76% 36%;
+  --primary-foreground: 0 0% 98%;
+}
+
+[data-color-theme="purple"] {
+  --primary: 262 83% 58%;
+  --primary-foreground: 0 0% 98%;
+}
+
+[data-color-theme="orange"] {
+  --primary: 25 95% 53%;
+  --primary-foreground: 0 0% 98%;
+}
+
+[data-color-theme="red"] {
+  --primary: 0 84% 60%;
+  --primary-foreground: 0 0% 98%;
+}
+
+.dark[data-color-theme="blue"] {
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 98%;
+}
+
+.dark[data-color-theme="green"] {
+  --primary: 142 76% 36%;
+  --primary-foreground: 0 0% 98%;
+}
+
+.dark[data-color-theme="purple"] {
+  --primary: 262 83% 58%;
+  --primary-foreground: 0 0% 98%;
+}
+
+.dark[data-color-theme="orange"] {
+  --primary: 25 95% 53%;
+  --primary-foreground: 0 0% 98%;
+}
+
+.dark[data-color-theme="red"] {
+  --primary: 0 84% 60%;
+  --primary-foreground: 0 0% 98%;
+}
+
+
+
+/* Custom animations */
+@keyframes pulse-glow {
+0%,
+100% {
+  opacity: 1;
+}
+50% {
+  opacity: 0.5;
+}
+}
+
+.animate-pulse-glow {
+animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth transitions for theme changes */
+* {
+transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+width: 6px;
+}
+
+::-webkit-scrollbar-track {
+background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+background: hsl(var(--muted-foreground));
+border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: hsl(var(--primary));
+}
+
+/* Responsive design utilities */
+@media (max-width: 640px) {
+.container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+}
+
+/* Glass morphism effect */
+.backdrop-blur {
+backdrop-filter: blur(8px);
+-webkit-backdrop-filter: blur(8px);
+}
+
+/* Chart animations */
+.recharts-wrapper {
+animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+to {
+  opacity: 1;
+  transform: translateY(0);
+}
+}
+
+/* Loading states */
+.loading-shimmer {
+background: linear-gradient(
+  90deg,
+  hsl(var(--muted)) 25%,
+  hsl(var(--muted-foreground) / 0.1) 50%,
+  hsl(var(--muted)) 75%
+);
+background-size: 200% 100%;
+animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+0% {
+  background-position: -200% 0;
+}
+100% {
+  background-position: 200% 0;
+}
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
