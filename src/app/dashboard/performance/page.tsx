@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Play, Pause, Activity, Cpu, Wifi } from "lucide-react"
 import { usePerformanceMonitor } from "@/hooks/use-perfomance-monitor"
 import { PerformanceChart } from "@/components/charts/MonitoringCharts"
-import { AlertPanel } from "@/components/AlertPanel"
+import { AlertPanel } from "@/components/custom/AlertPanel"
 
 export  default function PerformanceDashboard() {
   const { metrics, alerts, isMonitoring, startMonitoring, stopMonitoring, budget } = usePerformanceMonitor()

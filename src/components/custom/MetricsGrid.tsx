@@ -86,7 +86,7 @@ export function MetricsGrid({ latestData }: MetricsGridProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">{metric.title}</p>
-                  <p className="text-2xl font-bold">{metric.value}</p>
+                  <p className="text-2xl font-bold text-primary">{metric.value}</p>
                   <div className="flex items-center space-x-1 mt-1">
                     {isPositive ? (
                       <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-400" />

@@ -1,9 +1,6 @@
 'use client'
 
 import * as React from "react"
-
-import { SearchForm } from "@/components/search-form"
-import { VersionSwitcher } from "@/components/version-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -25,7 +22,6 @@ import {
   Settings,
   Zap,
   GalleryVerticalEnd,
-  ChevronsUpDown,
 } from "lucide-react"
 
 // Map icon string to Lucide icon component
@@ -80,11 +76,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+              <div className="bg-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <GalleryVerticalEnd className="size-4" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-300 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold text-primary bg-clip-text ">
                   SaaS Analytics Platform
                 </h1>
               </div>

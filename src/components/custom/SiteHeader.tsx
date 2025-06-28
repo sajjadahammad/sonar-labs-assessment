@@ -11,7 +11,7 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Ellipsis, Share2, Star, UserPlus } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { ThemeToggle } from "./ThemeToggle"
 import { ConnectionStatus } from "./ConnectionStatus"
 import { useWebSocket } from "@/hooks/use-websocket"
@@ -54,7 +54,7 @@ export function SiteHeader() {
                                     key={index}
                                     className="flex -mr-3 first:ml-0"
                                     style={{ zIndex: 5 - index }} >
-                                    <Avatar className="size-10 border-2 border-white" style={{ backgroundColor: avatar.backgroundColor }}>
+                                    <Avatar className="size-6 border-2 border-white" style={{ backgroundColor: avatar.backgroundColor }}>
                                         {avatar.image ? (
                                             <AvatarImage src={avatar.image} alt={`Avatar ${index + 1}`} />
                                         ) : null}
@@ -64,7 +64,7 @@ export function SiteHeader() {
                             ))}
                         </div>
 
-                        <Button variant='outline'><UserPlus className="mr-3" /> Invite</Button>
+                        
                     </div>
                     <div className="flex items-center gap-5 ">
                         <Star size={15} className="inline text-zinc-500" />
