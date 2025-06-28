@@ -15,7 +15,7 @@ export  default function PerformanceDashboard() {
   const getStatusColor = (value: number, min?: number, max?: number, warning?: number) => {
     if (min && value < min) return "text-red-500"
     if (max && value > max) return "text-red-500"
-    if (warning && (value < warning || value > warning)) return "text-yellow-500"
+    if (warning && (value < warning || value > warning)) return "text-primary"
     return "text-green-500"
   }
 
@@ -23,10 +23,10 @@ export  default function PerformanceDashboard() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Performance Monitor</h1>
-          <p className="text-muted-foreground">Real-time application performance metrics with Sentry integration</p>
+          <h1 className="text-2xl  font-bold">Performance Monitor</h1>
+          <p className="text-muted-foreground">Real-time application performance metric</p>
         </div>
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <Button
             onClick={isMonitoring ? stopMonitoring : startMonitoring}
             variant={isMonitoring ? "destructive" : "default"}
@@ -35,7 +35,7 @@ export  default function PerformanceDashboard() {
             {isMonitoring ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
             {isMonitoring ? "Stop" : "Start"} Monitoring
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Current Metrics Cards */}

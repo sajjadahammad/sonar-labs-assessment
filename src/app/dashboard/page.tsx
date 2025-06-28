@@ -1,13 +1,12 @@
 'use client'
-// import { UserFlowChart } from "@/components/charts/userFlowChart"
-// import { ActivityHeatmap } from "@/components/charts/HeatMapChart"
+
 import { PerformanceChart } from "@/components/charts/PeformanceChart"
 import RealTimeChart from "@/components/charts/RealTimeChart"
 import UserFlowChart from "@/components/charts/userFlowChart"
 import { MetricsGrid } from "@/components/MetricsGrid"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useWebSocket } from "@/hooks/use-websocket"
-import { AnalyticsData, SiteMetrics } from "@/types/analytics"
+import { AnalyticsData } from "@/types/analytics"
 import { BarChart3 } from "lucide-react"
 
 export default function Page() {
@@ -18,7 +17,7 @@ export default function Page() {
   return (
    <div className="flex flex-col gap-6">
       <div>
-          <h2 className="text-2xl font-bold flex items-center space-x-2">
+          <h2 className="text-2xl font-bold flex items-center space-x-2 text-primary">
             <BarChart3 className="h-6 w-6" />
             <span>Platform Overview</span>
           </h2>

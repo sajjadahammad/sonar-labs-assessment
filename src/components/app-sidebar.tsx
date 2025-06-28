@@ -106,12 +106,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       href={item.url}
                       className={`${
                         pathname === item.url
-                          ? "shadow-sm rounded-md font-medium border transition-all ease-in-out duration-200"
-                          : "text-gray-600 "
-                      }`}
+                          ? "shadow-sm rounded-md font-medium border transition-all ease-in-out duration-200 text-primary shadow-primary/30"
+                          : "text-gray-400 "
+                      } mb-2`}
                     >
-                      <SidebarMenuItem key={item.title} className="">
-                        <SidebarMenuButton asChild>
+                      <SidebarMenuItem key={item.title} >
+                        <SidebarMenuButton asChild >
                           <span className="flex items-center gap-2 ">
                             {Icon && <Icon className="w-4 h-4" aria-hidden="true" />}
                             <span>{item.title}</span>

@@ -61,7 +61,7 @@ export default function RealTimeChart({ data, isLoading, error }: RealTimeChartP
              tickLine={false}
              axisLine={false}
            />
-           <YAxis stroke={isDark ? "#9ca3af" : "#6b7280"} fontSize={12} tickLine={false} axisLine={false} />
+           <YAxis stroke={isDark ? "#9ca3af" : "#6b7280"} fontSize={12} tickLine={false} axisLine={false}  label={{ value: "Pageviews", angle: -90, position: "insideLeft" }} />
            <Tooltip
              contentStyle={{
                backgroundColor: isDark ? "#1f2937" : "#ffffff",

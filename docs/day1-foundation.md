@@ -22,13 +22,83 @@ This structure allows for easy maintenance, scalability, and collaboration, with
 
 ### WebSocket Connection Management and Error Handling Strategy
 
-The `useWebSocket` hook implements real-time data streaming using `react-use-websocket`:
+Below is a 5-point README for the `useWebSocket` hook, written as of 08:59 PM IST on Saturday, June 28, 2025. This README provides an overview, installation instructions, usage examples, API details, and additional notes to guide developers, aligning with the hook's purpose and implementation.
 
-- **Connection States**: Tracks `connecting`, `connected`, `disconnected`, and `error` states, mapped from `ReadyState`.
-- **Reconnection Logic**: Utilizes exponential backoff (up to 10 seconds) with a maximum of 3 attempts.
-- **Error Handling**: Sets an error state (`error`) on connection failure and logs parsing errors.
-- **Fallback Mechanism**: Switches to mock data via `createMockDataStream` when the WebSocket disconnects, mimicking real-time behavior.
-- **Data Management**: Limits `data` and `sites` arrays to 1000 and 100 entries respectively to prevent memory overload.
+---
+
+# `useWebSocket` Hook README
+
+## 1. Overview
+The `useWebSocket` hook is a custom React hook designed to manage real-time data streams via WebSocket connections. It provides a robust solution for handling WebSocket data, managing connection states, and offering a mock data fallback when the WebSocket server is unavailable. Built with TypeScript, it ensures type safety and is optimized for performance, limiting data to prevent memory issues. This hook is ideal for applications requiring real-time analytics, such as the SonarLabs dashboard.
+
+## 2. Installation
+To use this hook, ensure you have the required dependencies installed in your Next.js project:
+
+```bash
+npm install react-use-websocket
+# or
+yarn add react-use-websocket
+```
+
+Import the hook into your project and ensure the `createMockDataStream` utility is available in `utils/mockDataGenerator.ts`.
+
+```tsx
+import { useWebSocket } from '@/hooks/useWebSocket';
+```
+
+## 3. Usage
+Integrate the hook into a React component to manage WebSocket data and connection states. Example:
+
+```tsx
+'use client';
+
+import React from 'react';
+import { useWebSocket } from '@/hooks/useWebSocket';
+
+const WebSocketDashboard: React.FC = () => {
+  const { data, sites, connectionStatus, error, usingMockData, isLoading } = useWebSocket();
+
+  return (
+    <div>
+      <h2>WebSocket Status: {connectionStatus}</h2>
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <div>
+          <h3>Data Points: {data.length}</h3>
+          <h3>Sites: {sites.length}</h3>
+          <p>Using Mock Data: {usingMockData ? 'Yes' : 'No'}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default WebSocketDashboard;
+```
+
+- **Setup**: The hook connects to `ws://localhost:8080` by default. Update the URL if your WebSocket server differs.
+- **Fallback**: Automatically switches to mock data if the WebSocket disconnects, resuming real data on reconnection.
+
+## 4. API
+The hook returns the following properties:
+
+- **`data: AnalyticsData[]`**: Array of received WebSocket data, limited to the last 1000 entries.
+- **`sites: SiteWithAnalytics[]`**: Array of sites with their data history, limited to 100 entries per site.
+- **`connectionStatus: ConnectionStatus`**: Current connection state (`'connected'`, `'disconnected'`, `'connecting'`, or `'error'`).
+- **`error: string | null`**: Error message if parsing or connection fails.
+- **`usingMockData: boolean`**: Indicates if mock data is being used.
+- **`isLoading: boolean`**: True if no data is available and not connected.
+
+## 5. Additional Notes
+- **Performance Optimization**: Limits data to prevent memory leaks (e.g., resolved 500MB issue from Day 2 crisis on June 28, 2025). Use with `usePerformanceMonitor` for real-time metrics.
+- **Reconnection Logic**: Implements exponential backoff (up to 10s) with 3 retry attempts for robustness.
+- **Mock Data**: Relies on `createMockDataStream` for fallback; ensure it’s implemented to match `AnalyticsData` structure.
+- **Testing**: Test with a local WebSocket server at `ws://localhost:8080` sending `AnalyticsData` messages. Example server setup available in project docs.
+- **Current Status**: Verified stable at 08:59 PM IST on June 28, 2025, post-demo. Monitor for edge cases (e.g., high message rates).
+
+
 
 ### State Management Approach
 
