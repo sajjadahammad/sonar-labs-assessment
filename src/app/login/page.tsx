@@ -18,15 +18,13 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const { login, isLoading, error, isAuthenticated, MOCK_USERS } = useAuth()
   const router = useRouter()
-  const searchParams = useSearchParams()
 
-  const redirectTo = searchParams.get("redirect") || "/"
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push(redirectTo)
+      router.push('/dashboard')
     }
-  }, [isAuthenticated, router, redirectTo])
+  }, [isAuthenticated, router, ])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
