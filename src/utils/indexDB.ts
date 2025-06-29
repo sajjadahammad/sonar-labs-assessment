@@ -1,5 +1,6 @@
 import { decryptSensitiveFields, encryptSensitiveFields } from "./encryption";
 
+
 const DB_NAME = 'analytics_db';
 const DB_VERSION = 1;
 const DATA_STORE = 'analytics_data';

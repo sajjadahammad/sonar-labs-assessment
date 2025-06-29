@@ -4,8 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import useWebSocketLib, { ReadyState } from 'react-use-websocket';
 import type { AnalyticsData } from '@/types/analytics';
 import { createMockDataStream } from '@/utils/mockDataGenerator';
-import { decryptSensitiveFields, encryptSensitiveFields } from '@/lib/encryption';
-import { loadFromIndexedDB, saveToIndexedDB } from '@/lib/indexDB';
+import { loadFromIndexedDB, saveToIndexedDB } from '@/utils/indexDB';
 
 // Define a type for site data with analytics history
 type SiteWithAnalytics = {
