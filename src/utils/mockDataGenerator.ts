@@ -32,8 +32,6 @@ export const createMockDataStream = (callback: (data: SiteAnalyticsData) => void
       userFlow: [
         { from: '/', to: '/products', count: Math.floor(Math.random() * 20) },
         { from: '/products', to: '/checkout', count: Math.floor(Math.random() * 15) },
-        { from: '/', to: '/about', count: Math.floor(Math.random() * 12) },
-        { from: '/blog', to: '/', count: Math.floor(Math.random() * 8) },
       ],
     };
   };
