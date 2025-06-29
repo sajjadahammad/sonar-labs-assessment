@@ -23,8 +23,6 @@ export const createMockDataStream = (callback: (data: SiteAnalyticsData) => void
         { path: '/', views: Math.floor(Math.random() * 50) + 20 },
         { path: '/products', views: Math.floor(Math.random() * 40) + 10 },
         { path: '/about', views: Math.floor(Math.random() * 30) + 5 },
-        { path: '/contact', views: Math.floor(Math.random() * 25) + 3 },
-        { path: '/blog', views: Math.floor(Math.random() * 35) + 8 },
       ],
       performanceMetrics: {
         loadTime: Math.random() * 3 + 0.5,

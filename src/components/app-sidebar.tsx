@@ -23,6 +23,7 @@ import {
   Zap,
   GalleryVerticalEnd,
 } from "lucide-react"
+import { useAuth } from "@/hooks/use-auth";
 
 // Map icon string to Lucide icon component
 const iconMap: Record<string, React.ElementType> = {
@@ -44,24 +45,33 @@ const data = {
         {
           title: "Real Time Overview",
           url: "/dashboard",
-          icon: "dashboard", // You can replace with an actual icon component or import later
+          icon: "dashboard",
+          roles: ["admin", "analyst", "viewer"], // All roles can access
         },
         {
           title: "Performance",
           url: "/dashboard/performance",
-          icon: "performance", // Updated icon name
+          icon: "performance",
+          roles: ["admin", "analyst"], // Admin and analyst only
         },
         {
           title: "Reports",
           url: "/dashboard/reports",
-          icon: "reports", // Updated icon name
+          icon: "reports",
+          roles: ["admin", "analyst"], // Admin and analyst only
+        },
+        {
+          title: "Client Management",
+          url: "/dashboard/client-management",
+          icon: "reports",
+          roles: ["admin", "analyst"], // Admin and analyst only
         },
         {
           title: "Settings",
           url: "/dashboard/settings",
-          icon: "settings", // Updated icon name
+          icon: "settings",
+          roles: ["admin"], // Admin only
         },
-        
       ],
     },
   ],
@@ -69,6 +79,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const { hasRole } = useAuth()
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -96,6 +107,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenu>
                 {item.items.map((item, idx) => {
                   const Icon = iconMap[item.icon] || null
+                 
+                  
+                  // Check if user has required role for this menu item
+                  const hasRequiredRole = item.roles ? hasRole(item.roles) : true
+                  
+                  // Don't render menu item if user doesn't have required role
+                  if (!hasRequiredRole) return null
+                  
                   return (
                     <Link
                       key={idx}

@@ -1,9 +1,9 @@
 'use client'
 
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   DropdownMenuLabel
@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { 
-  Filter, 
+import {
+  Filter,
   Calendar,
   Share2,
   X,
@@ -59,15 +59,15 @@ interface DashboardFiltersProps {
   className?: string
 }
 
-export function DashboardFilters({ 
-  onFiltersChange, 
+export function DashboardFilters({
+  onFiltersChange,
   dataCount = 0,
   className = ""
 }: DashboardFiltersProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  
+
   const [filters, setFilters] = useState<FilterState>(defaultFilters)
 
   // Parse filters from URL search params
@@ -111,33 +111,33 @@ export function DashboardFilters({
   const createQueryString = useCallback(
     (newFilters: FilterState) => {
       const params = new URLSearchParams(searchParams.toString())
-      
+
       // Clear existing filter params
       params.delete('from')
       params.delete('to')
       params.delete('timeRange')
       params.delete('sites')
-      
+
       // Clear metric params
       Object.keys(defaultFilters.metrics).forEach(key => {
         params.delete(`${key}Min`)
         params.delete(`${key}Max`)
       })
-      
+
       // Set new filter params
       if (newFilters.dateRange.from) params.set('from', newFilters.dateRange.from)
       if (newFilters.dateRange.to) params.set('to', newFilters.dateRange.to)
       if (newFilters.timeRange !== 'all') params.set('timeRange', newFilters.timeRange)
-      
+
       // Add metric filters
       Object.entries(newFilters.metrics).forEach(([key, value]) => {
         const defaultMax = defaultFilters.metrics[key as keyof typeof defaultFilters.metrics].max
         if (value.min > 0) params.set(`${key}Min`, value.min.toString())
         if (value.max < defaultMax) params.set(`${key}Max`, value.max.toString())
       })
-      
+
       if (newFilters.sites.length > 0) params.set('sites', newFilters.sites.join(','))
-      
+
       return params.toString()
     },
     [searchParams]
@@ -167,8 +167,8 @@ export function DashboardFilters({
     const currentURL = `${window.location.origin}${pathname}?${createQueryString(filters)}`
     navigator.clipboard.writeText(currentURL)
     // You could add a toast notification here
-    toast.success('URL copied to clipboard',{
-      position:'top-right'
+    toast.success('URL copied to clipboard', {
+      position: 'top-right'
     })
   }, [pathname, createQueryString, filters])
 
@@ -177,12 +177,12 @@ export function DashboardFilters({
     if (filters.dateRange.from || filters.dateRange.to) count++
     if (filters.timeRange !== 'all') count++
     if (filters.sites.length > 0) count++
-    
+
     Object.entries(filters.metrics).forEach(([key, metric]) => {
       const defaultMetric = defaultFilters.metrics[key as keyof typeof defaultFilters.metrics]
       if (metric.min > 0 || metric.max < defaultMetric.max) count++
     })
-    
+
     return count
   }, [filters])
 
@@ -196,7 +196,7 @@ export function DashboardFilters({
         <Share2 className="h-4 w-4" />
         Share
       </Button>
-      
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="flex items-center gap-2">
@@ -219,7 +219,7 @@ export function DashboardFilters({
             )}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          
+
           {/* Time Range Filter */}
           <div className="p-2">
             <Label className="text-xs font-medium flex items-center gap-1">
@@ -243,12 +243,15 @@ export function DashboardFilters({
                 >
                   {option.label}
                 </Button>
+
               ))}
+
             </div>
+
           </div>
-          
+
           <DropdownMenuSeparator />
-          
+
           {/* Date Range Filter */}
           <div className="p-2">
             <Label className="text-xs font-medium flex items-center gap-1">
@@ -260,7 +263,7 @@ export function DashboardFilters({
                 type="date"
                 placeholder="From"
                 value={filters.dateRange.from}
-                onChange={(e) => updateFilters({ 
+                onChange={(e) => updateFilters({
                   dateRange: { ...filters.dateRange, from: e.target.value }
                 })}
                 className="h-7 text-xs"
@@ -269,23 +272,23 @@ export function DashboardFilters({
                 type="date"
                 placeholder="To"
                 value={filters.dateRange.to}
-                onChange={(e) => updateFilters({ 
+                onChange={(e) => updateFilters({
                   dateRange: { ...filters.dateRange, to: e.target.value }
                 })}
                 className="h-7 text-xs"
               />
             </div>
           </div>
-          
+
           <DropdownMenuSeparator />
-          
+
           {/* Metrics Filters */}
           <div className="p-2 max-h-60 overflow-y-auto">
             <Label className="text-xs font-medium flex items-center gap-1">
               <TrendingUp className="h-3 w-3" />
               Metrics Range
             </Label>
-            
+
             {Object.entries(filters.metrics).map(([key, value]) => (
               <div key={key} className="mt-2">
                 <Label className="text-xs text-muted-foreground capitalize flex items-center gap-1">
@@ -324,7 +327,10 @@ export function DashboardFilters({
           </div>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+      {getActiveFiltersCount() > 0 ? (<Button variant="outline" onClick={clearFilters}>
+        Clear All
+      </Button>) : null}
+
       {/* Data Count Display
       {dataCount > 0 && (
         <span className="text-sm text-muted-foreground">
@@ -348,12 +354,12 @@ export function ActiveFilters({ filters, onUpdateFilters, className = "" }: Acti
     if (filters.dateRange.from || filters.dateRange.to) count++
     if (filters.timeRange !== 'all') count++
     if (filters.sites.length > 0) count++
-    
+
     Object.entries(filters.metrics).forEach(([key, metric]) => {
       const defaultMetric = defaultFilters.metrics[key as keyof typeof defaultFilters.metrics]
       if (metric.min > 0 || metric.max < defaultMetric.max) count++
     })
-    
+
     return count
   }
 
@@ -365,9 +371,9 @@ export function ActiveFilters({ filters, onUpdateFilters, className = "" }: Acti
         <Badge variant="secondary" className="flex items-center gap-1">
           <Clock className="h-3 w-3" />
           {filters.timeRange}
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-4 w-4 p-0 hover:bg-transparent"
             onClick={() => onUpdateFilters({ timeRange: 'all' })}
           >
@@ -379,9 +385,9 @@ export function ActiveFilters({ filters, onUpdateFilters, className = "" }: Acti
         <Badge variant="secondary" className="flex items-center gap-1">
           <Calendar className="h-3 w-3" />
           {filters.dateRange.from} - {filters.dateRange.to}
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-4 w-4 p-0 hover:bg-transparent"
             onClick={() => onUpdateFilters({ dateRange: { from: '', to: '' } })}
           >
@@ -392,9 +398,9 @@ export function ActiveFilters({ filters, onUpdateFilters, className = "" }: Acti
       {filters.sites.length > 0 && (
         <Badge variant="secondary" className="flex items-center gap-1">
           Sites: {filters.sites.join(', ')}
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-4 w-4 p-0 hover:bg-transparent"
             onClick={() => onUpdateFilters({ sites: [] })}
           >
@@ -460,7 +466,7 @@ export interface AnalyticsData {
 
 // Hook for filtering data - now properly typed
 export function useDataFilter<T extends Record<string, any> = AnalyticsData>(
-  data: T[], 
+  data: T[],
   filters: FilterState,
   options?: {
     timestampField?: keyof T
@@ -482,7 +488,7 @@ export function useDataFilter<T extends Record<string, any> = AnalyticsData>(
 
   return useMemo(() => {
     if (!data || data.length === 0) return []
-    
+
     return data.filter(item => {
       // Date range filter
       if (filters.dateRange.from || filters.dateRange.to) {
@@ -490,13 +496,13 @@ export function useDataFilter<T extends Record<string, any> = AnalyticsData>(
         if (filters.dateRange.from && itemDate < new Date(filters.dateRange.from)) return false
         if (filters.dateRange.to && itemDate > new Date(filters.dateRange.to)) return false
       }
-      
+
       // Time range filter
       if (filters.timeRange !== 'all') {
         const now = new Date()
         const itemDate = getDateValue(item[timestampField])
         const timeDiff = now.getTime() - itemDate.getTime()
-        
+
         switch (filters.timeRange) {
           case '1h':
             if (timeDiff > 60 * 60 * 1000) return false
@@ -512,24 +518,24 @@ export function useDataFilter<T extends Record<string, any> = AnalyticsData>(
             break
         }
       }
-      
+
       // Metrics filters
       const pageViews = getNumericValue(item[pageViewsField])
       const uniqueVisitors = getNumericValue(item[uniqueVisitorsField])
       const bounceRate = getNumericValue(item[bounceRateField])
       const sessionDuration = getNumericValue(item[sessionDurationField])
-      
+
       if (pageViews < filters.metrics.pageViews.min || pageViews > filters.metrics.pageViews.max) return false
       if (uniqueVisitors < filters.metrics.uniqueVisitors.min || uniqueVisitors > filters.metrics.uniqueVisitors.max) return false
       if (bounceRate < filters.metrics.bounceRate.min || bounceRate > filters.metrics.bounceRate.max) return false
       if (sessionDuration < filters.metrics.sessionDuration.min || sessionDuration > filters.metrics.sessionDuration.max) return false
-      
+
       // Site filter
       if (filters.sites.length > 0) {
         const siteValue = getStringValue(item[siteField])
         if (!siteValue || !filters.sites.includes(siteValue)) return false
       }
-      
+
       return true
     })
   }, [data, filters, timestampField, siteField, pageViewsField, uniqueVisitorsField, bounceRateField, sessionDurationField])
@@ -537,7 +543,7 @@ export function useDataFilter<T extends Record<string, any> = AnalyticsData>(
 
 // Specialized hook for AnalyticsData with correct field mappings
 export function useAnalyticsDataFilter(
-  data: AnalyticsData[], 
+  data: AnalyticsData[],
   filters: FilterState
 ): AnalyticsData[] {
   return useDataFilter(data, filters, {
