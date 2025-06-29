@@ -52,18 +52,18 @@ export default function LoginPage() {
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case "admin":
-        return "default"
+        return "bg-gradient-to-r from-red-500 to-pink-500 text-white"
       case "analyst":
-        return "secondary"
+        return "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
       case "viewer":
-        return "outline"
+        return "bg-gradient-to-r from-green-500 to-emerald-500 text-white"
       default:
-        return "outline"
+        return "bg-gradient-to-r from-gray-500 to-slate-500 text-white"
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4 font-poppins">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
@@ -146,7 +146,7 @@ export default function LoginPage() {
                 className="justify-center cursor-pointer"
               >
                 {getRoleIcon(user.role,"mr-2 h-4 w-4")}
-                {user.name} <span className="ml-2 text-xs text-muted-foreground">({user.role})</span>
+                {user.name} <span className={`ml-2 text-xs text-muted-foreground rounded-sm px-1 ${getRoleBadgeVariant(user.role)}`}>{user.role}</span>
               </Button>
             ))}
           </div>

@@ -22,6 +22,8 @@ import {
   Settings,
   Zap,
   GalleryVerticalEnd,
+  Users,
+  Handshake
 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth";
 
@@ -32,6 +34,8 @@ const iconMap: Record<string, React.ElementType> = {
   reports: ClipboardPlus,
   settings: Settings,
   zap: Zap,
+  user:Users,
+  collaboration:Handshake
 }
 
 // This is sample data.
@@ -54,17 +58,23 @@ const data = {
           icon: "performance",
           roles: ["admin", "analyst"], // Admin and analyst only
         },
+        // {
+        //   title: "Reports",
+        //   url: "/dashboard/reports",
+        //   icon: "reports",
+        //   roles: ["admin", "analyst"], // Admin and analyst only
+        // },
         {
-          title: "Reports",
-          url: "/dashboard/reports",
-          icon: "reports",
-          roles: ["admin", "analyst"], // Admin and analyst only
+          title: "Collaboration",
+          url: "/dashboard/collobaration",
+          icon: "collaboration",
+          roles: ["analyst"],
         },
         {
-          title: "Client Management",
-          url: "/dashboard/client-management",
-          icon: "reports",
-          roles: ["admin", "analyst"], // Admin and analyst only
+          title: "Site Management",
+          url: "/dashboard/site-management",
+          icon: "user",
+          roles: ["admin"], 
         },
         {
           title: "Settings",

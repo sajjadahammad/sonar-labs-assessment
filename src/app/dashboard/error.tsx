@@ -12,14 +12,14 @@ export default function Error({
   reset: () => void
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br  p-4">
       <Card className="w-full max-w-md shadow-lg border-red-200">
         <CardHeader className="text-center space-y-4">
           <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
             <AlertTriangle className="w-8 h-8 text-red-600" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold text-gray-900">
+            <CardTitle className="text-2xl font-bold text-primary">
               Oops! Something went wrong
             </CardTitle>
             <CardDescription className="text-gray-600 mt-2">

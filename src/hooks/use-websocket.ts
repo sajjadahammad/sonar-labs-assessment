@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import useWebSocketLib, { ReadyState } from 'react-use-websocket';
 import type { AnalyticsData } from '@/types/analytics';
 import { createMockDataStream } from '@/utils/mockDataGenerator';
+import { decryptSensitiveFields, encryptSensitiveFields } from '@/lib/encryption';
+import { loadFromIndexedDB, saveToIndexedDB } from '@/lib/indexDB';
 
 // Define a type for site data with analytics history
 type SiteWithAnalytics = {
@@ -17,103 +19,9 @@ type ConnectionStatus = 'connected' | 'disconnected' | 'connecting' | 'error';
 // Data management constants
 const MAX_DATA_POINTS = 1000;
 const MAX_SITE_DATA_POINTS = 100;
-const DB_NAME = 'analytics_db';
-const DB_VERSION = 1;
 const DATA_STORE = 'analytics_data';
 const SITES_STORE = 'analytics_sites';
-const DATA_EXPIRY_HOURS = 1; // Data expires after 1 hour
 
-// IndexedDB helper functions
-const openDB = (): Promise<IDBDatabase> => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
-    
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      
-      // Create object stores if they don't exist
-      if (!db.objectStoreNames.contains(DATA_STORE)) {
-        const dataStore = db.createObjectStore(DATA_STORE, { keyPath: 'id', autoIncrement: true });
-        dataStore.createIndex('timestamp', 'timestamp', { unique: false });
-      }
-      if (!db.objectStoreNames.contains(SITES_STORE)) {
-        const sitesStore = db.createObjectStore(SITES_STORE, { keyPath: 'siteId' });
-        sitesStore.createIndex('timestamp', 'timestamp', { unique: false });
-      }
-    };
-  });
-};
-
-const saveToIndexedDB = async (storeName: string, data: any): Promise<void> => {
-  try {
-    const db = await openDB();
-    const transaction = db.transaction([storeName], 'readwrite');
-    const store = transaction.objectStore(storeName);
-    
-    // Clear existing data and add new data with timestamp
-    await store.clear();
-    const timestamp = Date.now();
-    
-    if (Array.isArray(data)) {
-      for (const item of data) {
-        await store.add({ ...item, timestamp });
-      }
-    } else {
-      await store.add({ ...data, timestamp });
-    }
-  } catch (error) {
-    console.error('Error saving to IndexedDB:', error);
-  }
-};
-
-const loadFromIndexedDB = async (storeName: string): Promise<any[]> => {
-  try {
-    const db = await openDB();
-    const transaction = db.transaction([storeName], 'readwrite'); // Use readwrite to allow pruning
-    const store = transaction.objectStore(storeName);
-    const request = store.getAll();
-    
-    return new Promise((resolve, reject) => {
-      request.onerror = () => reject(request.error);
-      request.onsuccess = async () => {
-        const data = request.result || [];
-        
-        // Prune expired data (older than 1 hour)
-        const cutoffTime = Date.now() - (DATA_EXPIRY_HOURS * 60 * 60 * 1000);
-        const validData = data.filter((item: any) => 
-          item.timestamp && item.timestamp > cutoffTime
-        );
-        
-        // Remove expired data from IndexedDB
-        if (validData.length < data.length) {
-          const expiredData = data.filter((item: any) => 
-            item.timestamp && item.timestamp <= cutoffTime
-          );
-          
-          for (const expiredItem of expiredData) {
-            if (storeName === DATA_STORE) {
-              await store.delete(expiredItem.id);
-            } else {
-              await store.delete(expiredItem.siteId);
-            }
-          }
-          
-          console.log(`Pruned ${data.length - validData.length} expired records from ${storeName}`);
-        }
-        
-        // Remove timestamp from returned data to maintain compatibility
-        const cleanData = validData.map(({ timestamp, ...item }) => item);
-        resolve(cleanData);
-      };
-    });
-  } catch (error) {
-    console.error('Error loading from IndexedDB:', error);
-    return [];
-  }
-};
 
 // Custom hook for WebSocket management
 export function useWebSocket() {
