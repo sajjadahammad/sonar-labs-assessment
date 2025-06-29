@@ -24,50 +24,33 @@ export function MetricsGrid({ latestData }: MetricsGridProps) {
       }
     : null;
 
-  if (!metrics) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i} className="border-0 shadow-lg bg-card/50 backdrop-blur">
-            <CardContent className="p-6">
-              <div className="animate-pulse">
-                <div className="h-4 bg-muted rounded w-1/2 mb-2" />
-                <div className="h-8 bg-muted rounded w-3/4 mb-2" />
-                <div className="h-3 bg-muted rounded w-1/3" />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
 
   const metricCards = [
     {
       title: "Page Views",
-      value: metrics.totalPageViews,
-      change: metrics.pageViewsChange,
+      value: metrics?.totalPageViews ?? 0,
+      change: metrics?.pageViewsChange ?? 0,
       icon: Eye,
       color: "text-blue-600 dark:text-blue-400",
     },
     {
       title: "Unique Visitors",
-      value: metrics.totalUniqueVisitors,
-      change: metrics.visitorsChange,
+      value: metrics?.totalUniqueVisitors ?? 0,
+      change: metrics?.visitorsChange ?? 0,
       icon: Users,
       color: "text-green-600 dark:text-green-400",
     },
     {
       title: "Avg. Session",
-      value: `${Math.round(metrics.avgSessionDuration / 60)}m ${metrics.avgSessionDuration % 60}s`,
-      change: metrics.sessionChange,
+      value: metrics ? `${Math.round(metrics.avgSessionDuration / 60)}m ${metrics.avgSessionDuration % 60}s` : "0m 0s",
+      change: metrics?.sessionChange ?? 0,
       icon: Clock,
       color: "text-purple-600 dark:text-purple-400",
     },
     {
       title: "Bounce Rate",
-      value: `${(metrics.avgBounceRate * 100).toFixed(1)}%`,
-      change: -metrics.bounceRateChange, // Negative because lower bounce rate is better
+      value: metrics ? `${(metrics.avgBounceRate * 100).toFixed(1)}%` : "0.0%",
+      change: metrics ? -metrics.bounceRateChange : 0, // Negative because lower bounce rate is better
       icon: MousePointer,
       color: "text-orange-600 dark:text-orange-400",
     },

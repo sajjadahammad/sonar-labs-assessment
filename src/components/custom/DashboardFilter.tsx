@@ -403,7 +403,7 @@ export function ActiveFilters({ filters, onUpdateFilters, className = "" }: Acti
 }
 
 // Hook for filtering data
-export function useDataFilter<T extends Record<string, any>>(
+export function useDataFilter<T extends Record<string, unknown>>(
   data: T[], 
   filters: FilterState,
   options?: {

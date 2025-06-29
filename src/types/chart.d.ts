@@ -4,3 +4,8 @@ export interface ChartDataPoint {
     uniqueVisitors: number
     siteName: string
   }
+
+  export interface ChartProps {
+    data: SiteAnalyticsData[]
+    error: Error | null
+  }

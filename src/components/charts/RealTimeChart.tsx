@@ -2,18 +2,12 @@
 
 import { useMemo } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Skeleton } from '@/components/ui/skeleton'
-import { ChartDataPoint } from '@/types/chart'
+import { ChartDataPoint, ChartProps } from '@/types/chart'
 import { SiteAnalyticsData } from '@/types/socket'
 import { useTheme } from 'next-themes'
 
-interface RealTimeChartProps {
-  data: SiteAnalyticsData[]
-  isLoading: boolean
-  error: Error | null
-}
 
-export default function RealTimeChart({ data, isLoading, error }: RealTimeChartProps) {
+export default function RealTimeChart({ data, error }: ChartProps) {
     const { theme } = useTheme()
   const isDark = theme === "dark"
   // Compute chart data
@@ -32,13 +26,6 @@ export default function RealTimeChart({ data, isLoading, error }: RealTimeChartP
     }))
   }, [data])
 
-  if (isLoading) {
-    return (
-      <div className="h-[300px] w-full">
-        <Skeleton className="h-full w-full" />
-      </div>
-    )
-  }
 
   if (error) {
     return (

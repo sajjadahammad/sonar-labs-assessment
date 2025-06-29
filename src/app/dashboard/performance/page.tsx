@@ -1,14 +1,15 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Play, Pause, Activity, Cpu, Wifi } from "lucide-react"
+import { Activity, Cpu, Wifi} from "lucide-react"
 import { usePerformanceMonitor } from "@/hooks/use-perfomance-monitor"
 import { PerformanceChart } from "@/components/charts/MonitoringCharts"
 import { AlertPanel } from "@/components/custom/AlertPanel"
+import PerformanceLoadingSkeleton from "@/components/loadings/PerformanceLoading"
 
-export  default function PerformanceDashboard() {
-  const { metrics, alerts, isMonitoring, startMonitoring, stopMonitoring, budget } = usePerformanceMonitor()
+
+export default function PerformanceDashboard() {
+  const { metrics, alerts, isMonitoring, budget } = usePerformanceMonitor()
 
   const latestMetrics = metrics[metrics.length - 1]
 
@@ -19,11 +20,15 @@ export  default function PerformanceDashboard() {
     return "text-green-500"
   }
 
+  if (!isMonitoring) {
+    return <PerformanceLoadingSkeleton />
+  }
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl  font-bold">Performance Monitor</h1>
+          <h1 className="text-2xl font-bold">Performance Monitor</h1>
           <p className="text-muted-foreground">Real-time application performance metric</p>
         </div>
         {/* <div className="flex items-center gap-2">
@@ -104,7 +109,7 @@ export  default function PerformanceDashboard() {
       </div>
 
       {/* Performance Charts */}
-      <div className="grid grid-cols-1  gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-base">FPS Monitor</CardTitle>

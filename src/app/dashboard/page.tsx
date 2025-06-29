@@ -4,19 +4,20 @@ import RealTimeChart from "@/components/charts/RealTimeChart"
 import UserFlowChart from "@/components/charts/userFlowChart"
 import { MetricsGrid } from "@/components/custom/MetricsGrid"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import DashboardLoadingSkeleton from "@/components/loadings/DashboardLoading"
 
 import { useWebSocket } from "@/hooks/use-websocket"
 import { AnalyticsData } from "@/types/analytics"
-import { BarChart3, Download, FileText, FileSpreadsheet } from "lucide-react"
-import * as XLSX from 'xlsx'
-import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import { BarChart3} from "lucide-react"
 import ExportToggle from "@/components/custom/ExportToggle"
 
 export default function Page() {
   const {data:siteData,isLoading} = useWebSocket()
   const latestData: AnalyticsData | undefined = siteData.length > 0 ? siteData[siteData.length - 1] : undefined;
 
+  if (isLoading) {
+    return <DashboardLoadingSkeleton />
+  }
 
   return (
    <div className="flex flex-col gap-6">
@@ -41,7 +42,7 @@ export default function Page() {
             <CardDescription>Live page views across all monitored sites</CardDescription>
           </CardHeader>
           <CardContent>
-          <RealTimeChart data={siteData} isLoading={isLoading} error={null}/>
+          <RealTimeChart data={siteData} error={null}/>
           </CardContent>
         </Card>
         <Card className="border-0 shadow-lg bg-card/50 backdrop-blur">
@@ -50,7 +51,7 @@ export default function Page() {
             <CardDescription>Average performance metrics across sites</CardDescription>
           </CardHeader>
           <CardContent>
-            <PerformanceChart data={siteData} isLoading={isLoading} error={null} />
+            <PerformanceChart data={siteData}  error={null} />
           </CardContent>
         </Card>
       </div>
@@ -60,7 +61,7 @@ export default function Page() {
             <CardDescription>User flow across all monitored sites</CardDescription>
           </CardHeader>
           <CardContent>
-          <UserFlowChart data={siteData} isLoading={isLoading} error={null}/>
+          <UserFlowChart data={siteData}  error={null}/>
           </CardContent>
         </Card>
    </div>

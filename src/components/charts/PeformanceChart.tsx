@@ -1,17 +1,12 @@
 "use client";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
-import type { AnalyticsData } from "@/types/analytics";
+import { ChartProps } from "@/types/chart";
 
-interface PerformanceChartProps {
-  data: AnalyticsData[];
-  isLoading: boolean;
-  error: Error | null;
-}
 
-export function PerformanceChart({ data, isLoading, error }: PerformanceChartProps) {
+
+export function PerformanceChart({ data, error }: ChartProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -25,14 +20,6 @@ export function PerformanceChart({ data, isLoading, error }: PerformanceChartPro
     FCP: item.performanceMetrics.firstContentfulPaint,
     LCP: item.performanceMetrics.largestContentfulPaint,
   }));
-
-  if (isLoading) {
-    return (
-      <div className="h-[300px] w-full">
-        <Skeleton className="h-full w-full" />
-      </div>
-    );
-  }
 
   if (error) {
     return (

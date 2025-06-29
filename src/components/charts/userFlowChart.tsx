@@ -2,20 +2,15 @@
 
 import { useState, useEffect } from "react"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useTheme } from "next-themes"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Wifi, WifiOff, TrendingUp } from "lucide-react"
-import { SiteAnalyticsData } from "@/types/socket"
+import { ChartProps } from "@/types/chart"
 
-interface RealTimeChartProps {
-  data: SiteAnalyticsData[] // Array of data points
-  isLoading: boolean
-  error: string | null
-}
 
-export default function UserFlowChart({ data, isLoading, error }: RealTimeChartProps) {
+
+export default function UserFlowChart({ data, error }: ChartProps) {
   const { theme } = useTheme()
   const isDark = theme === "dark"
 
@@ -55,13 +50,13 @@ export default function UserFlowChart({ data, isLoading, error }: RealTimeChartP
     // Create dynamic flow data based on actual userFlow data
     const flowData: { [key: string]: string | number } = { time }
     
-    latestData.userFlow.forEach((flow, index) => {
+    latestData.userFlow.forEach((flow: { from: string; to: string; count: number }) => {
       const flowKey = `${formatPageName(flow.from)} → ${formatPageName(flow.to)}`
       flowData[flowKey] = flow.count
     })
 
     setHistoricalData((prev) => {
-      const updated = [...prev, flowData]
+      const updated = [...prev, flowData as { time: string; [key: string]: string | number }]
       // Keep only last 15 data points for better visualization
       return updated.slice(-15)
     })
@@ -149,9 +144,7 @@ export default function UserFlowChart({ data, isLoading, error }: RealTimeChartP
         </CardHeader>
         <CardContent>
           <div className="h-[300px] w-full">
-            {isLoading ? (
-              <Skeleton className="h-full w-full" />
-            ) : historicalData.length > 0 ? (
+            { historicalData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={historicalData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#374151" : "#e5e7eb"} opacity={0.5} />
