@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useAuth } from "@/hooks/use-auth" 
+import { useAuth } from "@/hooks/use-auth"
 import { Eye, EyeOff, LogIn, Shield, Users, User } from "lucide-react"
 
 export default function LoginPage() {
@@ -137,16 +137,22 @@ export default function LoginPage() {
           </CardContent>
         </Card>
 
-        <main className="flex flex-col items-center justify-center h-screen gap-6">
-          <h1 className="text-2xl font-semibold">Select a demo user</h1>
-          <div className="flex flex-col gap-4 w-52">
-            {MOCK_USERS.map((u) => (
-              <Button key={u.id} onClick={() => login(u.id)}>
-                {u.name} <span className="ml-2 text-xs text-muted-foreground">({u.role})</span>
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-4">Demo Users</h2>
+          <div className="flex flex-col gap-2">
+            {MOCK_USERS.map((user) => (
+              <Button 
+                key={user.id} 
+                variant="outline" 
+                onClick={() => handleDemoLogin(user.email)}
+                className="justify-start"
+              >
+                {/* {getRoleIcon(user.role)} */}
+                {user.name} <span className="ml-2 text-xs text-muted-foreground">({user.role})</span>
               </Button>
             ))}
           </div>
-        </main>
+        </div>
       </div>
     </div>
   )
