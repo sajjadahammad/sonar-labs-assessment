@@ -70,7 +70,7 @@ export default function Page() {
             <CardDescription>Live page views across all monitored sites</CardDescription>
           </CardHeader>
           <CardContent>
-          <RealTimeChart data={siteData} error={null}/>
+          <RealTimeChart data={filteredData} error={null}/>
           </CardContent>
         </Card>
         <Card className="border-0 shadow-lg bg-card/50 backdrop-blur">
@@ -79,7 +79,7 @@ export default function Page() {
             <CardDescription>Average performance metrics across sites</CardDescription>
           </CardHeader>
           <CardContent>
-            <PerformanceChart data={siteData}  error={null} />
+            <PerformanceChart data={filteredData}  error={null} />
           </CardContent>
         </Card>
       </div>
@@ -89,7 +89,7 @@ export default function Page() {
             <CardDescription>User flow across all monitored sites</CardDescription>
           </CardHeader>
           <CardContent>
-          <UserFlowChart data={siteData}  error={null}/>
+          <UserFlowChart data={filteredData}  error={null}/>
           </CardContent>
         </Card>
    </div>
