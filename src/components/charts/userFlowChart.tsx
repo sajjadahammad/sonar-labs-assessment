@@ -212,7 +212,7 @@ export default function UserFlowChart({ data, error }: ChartProps) {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {latestData.userFlow.map((flow, index) => (
+              {latestData.userFlow.map((flow: any, index: number) => (
                 <div
                   key={`${flow.from}-${flow.to}-${index}`}
                   className="p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950"

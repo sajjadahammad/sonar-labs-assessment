@@ -41,28 +41,28 @@ export function PerformanceChart({ data, metric, budget }: PerformanceChartProps
           label: "FPS",
           color: "#10b981",
           unit: "",
-          yAxisDomain: [0, 120],
+          yAxisDomain: [0, 120] as [number, number],
         }
       case "memory":
         return {
           label: "Memory Usage",
           color: "#f59e0b",
           unit: "%",
-          yAxisDomain: [0, 100],
+          yAxisDomain: [0, 100] as [number, number],
         }
       case "latency":
         return {
           label: "WebSocket Latency",
           color: "#3b82f6",
           unit: "ms",
-          yAxisDomain: [0, "dataMax"],
+          yAxisDomain: [0, "dataMax"] as [number, "dataMax"],
         }
       default:
         return {
           label: "Value",
           color: "#6b7280",
           unit: "",
-          yAxisDomain: [0, "dataMax"],
+          yAxisDomain: [0, "dataMax"] as [number, "dataMax"],
         }
     }
   }
@@ -113,7 +113,7 @@ export function PerformanceChart({ data, metric, budget }: PerformanceChartProps
               y={budget.max}
               stroke="#ef4444"
               strokeDasharray="5 5"
-              label={{ value: `Max: ${budget.max}${config.unit}`, position: "topRight" }}
+              label={{ value: `Max: ${budget.max}${config.unit}`, position: "right" }}
             />
           )}
           {budget?.min && (
@@ -121,7 +121,7 @@ export function PerformanceChart({ data, metric, budget }: PerformanceChartProps
               y={budget.min}
               stroke="#ef4444"
               strokeDasharray="5 5"
-              label={{ value: `Min: ${budget.min}${config.unit}`, position: "bottomRight" }}
+              label={{ value: `Min: ${budget.min}${config.unit}`, position: "right" }}
             />
           )}
           {budget?.warning && (
@@ -129,7 +129,7 @@ export function PerformanceChart({ data, metric, budget }: PerformanceChartProps
               y={budget.warning}
               stroke="#f59e0b"
               strokeDasharray="3 3"
-              label={{ value: `Warning: ${budget.warning}${config.unit}`, position: "topRight" }}
+              label={{ value: `Warning: ${budget.warning}${config.unit}`, position: "right" }}
             />
           )}
 

@@ -402,6 +402,33 @@ export function ActiveFilters({ filters, onUpdateFilters, className = "" }: Acti
   )
 }
 
+// Helper function to safely get a numeric value from an unknown type
+function getNumericValue(value: unknown, fallback: number = 0): number {
+  if (typeof value === 'number') return value
+  if (typeof value === 'string') {
+    const parsed = parseFloat(value)
+    return isNaN(parsed) ? fallback : parsed
+  }
+  return fallback
+}
+
+// Helper function to safely get a string value from an unknown type
+function getStringValue(value: unknown, fallback: string = ''): string {
+  if (typeof value === 'string') return value
+  if (typeof value === 'number') return value.toString()
+  return fallback
+}
+
+// Helper function to safely get a date value from an unknown type
+function getDateValue(value: unknown, fallback: Date = new Date()): Date {
+  if (value instanceof Date) return value
+  if (typeof value === 'string' || typeof value === 'number') {
+    const date = new Date(value)
+    return isNaN(date.getTime()) ? fallback : date
+  }
+  return fallback
+}
+
 // Hook for filtering data
 export function useDataFilter<T extends Record<string, unknown>>(
   data: T[], 
@@ -430,7 +457,7 @@ export function useDataFilter<T extends Record<string, unknown>>(
     return data.filter(item => {
       // Date range filter
       if (filters.dateRange.from || filters.dateRange.to) {
-        const itemDate = new Date(item[timestampField] || Date.now())
+        const itemDate = getDateValue(item[timestampField])
         if (filters.dateRange.from && itemDate < new Date(filters.dateRange.from)) return false
         if (filters.dateRange.to && itemDate > new Date(filters.dateRange.to)) return false
       }
@@ -438,7 +465,7 @@ export function useDataFilter<T extends Record<string, unknown>>(
       // Time range filter
       if (filters.timeRange !== 'all') {
         const now = new Date()
-        const itemDate = new Date(item[timestampField] || Date.now())
+        const itemDate = getDateValue(item[timestampField])
         const timeDiff = now.getTime() - itemDate.getTime()
         
         switch (filters.timeRange) {
@@ -458,10 +485,10 @@ export function useDataFilter<T extends Record<string, unknown>>(
       }
       
       // Metrics filters
-      const pageViews = item[pageViewsField] || 0
-      const uniqueVisitors = item[uniqueVisitorsField] || 0
-      const bounceRate = item[bounceRateField] || 0
-      const sessionDuration = item[sessionDurationField] || 0
+      const pageViews = getNumericValue(item[pageViewsField])
+      const uniqueVisitors = getNumericValue(item[uniqueVisitorsField])
+      const bounceRate = getNumericValue(item[bounceRateField])
+      const sessionDuration = getNumericValue(item[sessionDurationField])
       
       if (pageViews < filters.metrics.pageViews.min || pageViews > filters.metrics.pageViews.max) return false
       if (uniqueVisitors < filters.metrics.uniqueVisitors.min || uniqueVisitors > filters.metrics.uniqueVisitors.max) return false
@@ -469,7 +496,10 @@ export function useDataFilter<T extends Record<string, unknown>>(
       if (sessionDuration < filters.metrics.sessionDuration.min || sessionDuration > filters.metrics.sessionDuration.max) return false
       
       // Site filter
-      if (filters.sites.length > 0 && item[siteField] && !filters.sites.includes(item[siteField])) return false
+      if (filters.sites.length > 0) {
+        const siteValue = getStringValue(item[siteField])
+        if (!siteValue || !filters.sites.includes(siteValue)) return false
+      }
       
       return true
     })

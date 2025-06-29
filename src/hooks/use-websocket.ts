@@ -56,11 +56,13 @@ export function useWebSocket() {
 
   // Handle incoming WebSocket messages and update state
   useEffect(() => {
-    let debounceTimer: NodeJS.Timeout;
+    let debounceTimer: NodeJS.Timeout | undefined;
     if (lastMessage && readyState === ReadyState.OPEN) {
       try {
         const newData: AnalyticsData = JSON.parse(lastMessage.data);
-        clearTimeout(debounceTimer); // Clear previous debounce
+        if (debounceTimer) {
+          clearTimeout(debounceTimer); // Clear previous debounce
+        }
         debounceTimer = setTimeout(() => {
           setData((prevData) => [...prevData.slice(-1000), newData]);
           setSites((prevSites) => {
@@ -78,7 +80,11 @@ export function useWebSocket() {
         setError('Failed to parse WebSocket data');
       }
     }
-    return () => clearTimeout(debounceTimer);
+    return () => {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+    };
   }, [lastMessage, readyState]);
 
   // Start mock data stream as a fallback

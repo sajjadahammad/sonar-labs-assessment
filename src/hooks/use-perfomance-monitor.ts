@@ -55,7 +55,7 @@ export function usePerformanceMonitor(budget: PerformanceBudget = DEFAULT_BUDGET
   // Memory Usage Monitoring
   const getMemoryUsage = useCallback(() => {
     if ("memory" in performance) {
-      const memory = (performance as Performance & { memory: MemoryInfo }).memory
+      const memory = (performance as Performance & { memory: any }).memory
       return {
         used: Math.round(memory.usedJSHeapSize / 1024 / 1024), // MB
         total: Math.round(memory.totalJSHeapSize / 1024 / 1024), // MB
