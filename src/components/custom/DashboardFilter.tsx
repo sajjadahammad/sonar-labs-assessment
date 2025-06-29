@@ -325,12 +325,12 @@ export function DashboardFilters({
         </DropdownMenuContent>
       </DropdownMenu>
       
-      {/* Data Count Display */}
+      {/* Data Count Display
       {dataCount > 0 && (
         <span className="text-sm text-muted-foreground">
           {dataCount} data points
         </span>
-      )}
+      )} */}
     </div>
   )
 }

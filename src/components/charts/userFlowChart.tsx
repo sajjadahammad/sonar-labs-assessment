@@ -39,7 +39,6 @@ export default function UserFlowChart({ data, error }: ChartProps) {
       return
     }
 
-    console.log('Processing latest data:', latestData)
 
     const time = new Date(latestData.timestamp).toLocaleTimeString("en-US", {
       hour12: false,
