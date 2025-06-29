@@ -7,9 +7,6 @@ import { useTypedSelector } from "./useTypedSelector"
 
 /**
  * useAuth ­– centralised authentication hook powered by Redux Toolkit
- *
- * Example:
- *   const { user, loginAs, logout } = useAuth()
  */
 export function useAuth() {
   const dispatch = useAppDispatch()
@@ -20,6 +17,20 @@ export function useAuth() {
     dispatch(initializeAuth())
   }, [dispatch])
 
+  const login = useCallback(
+    (email: string, password: string) => {
+      const found = MOCK_USERS.find((u) => u.email === email)
+      // Optional password check here (for demo use "password123")
+      if (found && password === "password123") {
+        dispatch(setUser(found))
+      } else {
+        // Dispatch error or set error state
+        console.error("Invalid credentials")
+      }
+    },
+    [dispatch]
+  )
+  
   /** Demo-only helper – instantly log in as one of the MOCK_USERS. */
   const loginAs = useCallback(
     (role: Role) => {
@@ -62,11 +73,12 @@ export function useAuth() {
       isLoading,
       error,
       initialize,
+      login,
       loginAs,
       logout: signOut,
       hasRole,
       MOCK_USERS, // exposed for the demo /login page
     }),
-    [user, role, isAuthenticated, isLoading, error, initialize, loginAs, signOut, hasRole],
+    [user, role, isAuthenticated, isLoading, error, initialize,login, loginAs, signOut, hasRole],
   )
 }
