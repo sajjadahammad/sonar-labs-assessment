@@ -26,6 +26,7 @@ import {
   Handshake
 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth";
+import type { Role } from "@/store/features/authSlice";
 
 // Map icon string to Lucide icon component
 const iconMap: Record<string, React.ElementType> = {
@@ -66,7 +67,7 @@ const data = {
         // },
         {
           title: "Collaboration",
-          url: "/dashboard/collobaration",
+          url: "/dashboard/collaboration",
           icon: "collaboration",
           roles: ["analyst"],
         },
@@ -120,11 +121,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                  
                   
                   // Check if user has required role for this menu item
-                  const hasRequiredRole = item.roles ? hasRole(item.roles) : true
+                  const hasRequiredRole = item.roles ? hasRole(item.roles as Role[]) : true
                   
                   // Don't render menu item if user doesn't have required role
                   if (!hasRequiredRole) return null
-                  
                   return (
                     <Link
                       key={idx}
