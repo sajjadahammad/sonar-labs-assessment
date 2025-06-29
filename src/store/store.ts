@@ -7,6 +7,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
   },
+  
 });
 
 // TypeScript (optional): Define RootState and AppDispatch types

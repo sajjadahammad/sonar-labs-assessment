@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo } from "react"
 import { initializeAuth,logout, setUser, MOCK_USERS, type Role, type AuthUser } from "@/store/features/authSlice"
 import { useAppDispatch } from "./useAppDispatch"
 import { useTypedSelector } from "./useTypedSelector"
+import { useRouter } from 'next/navigation'
 
 /**
  * useAuth ­– centralised authentication hook powered by Redux Toolkit
@@ -11,6 +12,7 @@ import { useTypedSelector } from "./useTypedSelector"
 export function useAuth() {
   const dispatch = useAppDispatch()
   const { user, isAuthenticated, isLoading, error } = useTypedSelector((s) => s.auth)
+  const router = useRouter()
 
   /** Initialise (rehydrate) auth state on the client. */
   const initialize = useCallback(() => {
@@ -43,6 +45,7 @@ export function useAuth() {
   /** Standard logout – clears Redux state and localStorage. */
   const signOut = useCallback(() => {
     dispatch(logout())
+    router.push('/login')
   }, [dispatch])
   /*  Derived helpers                                                        */
 
@@ -57,13 +60,13 @@ export function useAuth() {
   )
 
 
-  /*  Auto-bootstrap on first mount (client side)                            */
+
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) initialize()
-  }, [initialize, isAuthenticated, isLoading])
+  }, [])
 
-  /*  Exposed API (memoised)                                                 */
+
 
   return useMemo(
     () => ({
@@ -75,7 +78,7 @@ export function useAuth() {
       initialize,
       login,
       loginAs,
-      logout: signOut,
+        signOut,
       hasRole,
       MOCK_USERS, // exposed for the demo /login page
     }),

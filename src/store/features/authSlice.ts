@@ -47,8 +47,7 @@ export const MOCK_USERS: AuthUser[] = [
 
 
 export const initializeAuth = createAsyncThunk("auth/initialize", async () => {
-  if (typeof window === "undefined") return null
-  const raw = window.localStorage.getItem("auth_user")
+  const raw = localStorage.getItem("auth_user")
   return raw ? (JSON.parse(raw) as AuthUser) : null
 })
 
@@ -71,18 +70,16 @@ export const authSlice = createSlice({
       state.isAuthenticated = Boolean(action.payload)
       if (typeof window !== "undefined") {
         if (action.payload) {
-          window.localStorage.setItem("auth_user", JSON.stringify(action.payload))
+         localStorage.setItem("auth_user", JSON.stringify(action.payload))
         } else {
-          window.localStorage.removeItem("auth_user")
+          localStorage.removeItem("auth_user")
         }
       }
     },
     logout(state) {
       state.user = null
       state.isAuthenticated = false
-      if (typeof window !== "undefined") {
-        window.localStorage.removeItem("auth_user")
-      }
+    window.localStorage.removeItem("auth_user")
     },
   },
   extraReducers: (builder) => {

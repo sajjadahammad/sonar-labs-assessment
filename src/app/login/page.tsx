@@ -24,7 +24,7 @@ export default function LoginPage() {
     if (isAuthenticated) {
       router.push('/dashboard')
     }
-  }, [isAuthenticated, router, ])
+  }, [isAuthenticated, router ])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,16 +36,16 @@ export default function LoginPage() {
     setPassword("password123")
   }
 
-  const getRoleIcon = (role: string) => {
+  const getRoleIcon = (role: string, className = "h-4 w-4") => {
     switch (role) {
       case "admin":
-        return Shield
+        return <Shield className={className} />
       case "analyst":
-        return Users
+        return <Users className={className} />
       case "viewer":
-        return User
+        return <User className={className} />
       default:
-        return User
+        return <User className={className} />
     }
   }
 
@@ -118,7 +118,7 @@ export default function LoginPage() {
                 </Alert>
               )}
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-primary cursor-pointer" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
@@ -143,9 +143,9 @@ export default function LoginPage() {
                 key={user.id} 
                 variant="outline" 
                 onClick={() => handleDemoLogin(user.email)}
-                className="justify-start cursor-pointer"
+                className="justify-center cursor-pointer"
               >
-                {/* {getRoleIcon(user.role)} */}
+                {getRoleIcon(user.role,"mr-2 h-4 w-4")}
                 {user.name} <span className="ml-2 text-xs text-muted-foreground">({user.role})</span>
               </Button>
             ))}
