@@ -145,7 +145,7 @@ export default function LoginPage() {
                 key={user.id} 
                 variant="outline" 
                 onClick={() => handleDemoLogin(user.email)}
-                className="justify-start"
+                className="justify-start cursor-pointer"
               >
                 {/* {getRoleIcon(user.role)} */}
                 {user.name} <span className="ml-2 text-xs text-muted-foreground">({user.role})</span>
