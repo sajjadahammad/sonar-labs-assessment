@@ -24,6 +24,7 @@ import {
 } from "lucide-react"
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
+import { toast } from "sonner"
 
 export interface FilterState {
   dateRange: {
@@ -166,6 +167,9 @@ export function DashboardFilters({
     const currentURL = `${window.location.origin}${pathname}?${createQueryString(filters)}`
     navigator.clipboard.writeText(currentURL)
     // You could add a toast notification here
+    toast.success('URL copied to clipboard',{
+      position:'top-right'
+    })
   }, [pathname, createQueryString, filters])
 
   const getActiveFiltersCount = useCallback(() => {
@@ -429,26 +433,51 @@ function getDateValue(value: unknown, fallback: Date = new Date()): Date {
   return fallback
 }
 
-// Hook for filtering data
-export function useDataFilter<T extends Record<string, unknown>>(
+// Define the analytics data interface
+export interface AnalyticsData {
+  timestamp: string
+  siteId: string
+  siteName: string
+  pageViews: number
+  uniqueVisitors: number
+  bounceRate: number
+  avgSessionDuration: number
+  topPages: Array<{
+    path: string
+    views: number
+  }>
+  performanceMetrics: {
+    loadTime: number
+    firstContentfulPaint: number
+    largestContentfulPaint: number
+  }
+  userFlow: Array<{
+    from: string
+    to: string
+    count: number
+  }>
+}
+
+// Hook for filtering data - now properly typed
+export function useDataFilter<T extends Record<string, any> = AnalyticsData>(
   data: T[], 
   filters: FilterState,
   options?: {
-    timestampField?: string
-    siteField?: string
-    pageViewsField?: string
-    uniqueVisitorsField?: string
-    bounceRateField?: string
-    sessionDurationField?: string
+    timestampField?: keyof T
+    siteField?: keyof T
+    pageViewsField?: keyof T
+    uniqueVisitorsField?: keyof T
+    bounceRateField?: keyof T
+    sessionDurationField?: keyof T
   }
-) {
+): T[] {
   const {
-    timestampField = 'timestamp',
-    siteField = 'site',
-    pageViewsField = 'pageViews',
-    uniqueVisitorsField = 'uniqueVisitors',
-    bounceRateField = 'bounceRate',
-    sessionDurationField = 'sessionDuration'
+    timestampField = 'timestamp' as keyof T,
+    siteField = 'siteName' as keyof T, // Changed to match AnalyticsData interface
+    pageViewsField = 'pageViews' as keyof T,
+    uniqueVisitorsField = 'uniqueVisitors' as keyof T,
+    bounceRateField = 'bounceRate' as keyof T,
+    sessionDurationField = 'avgSessionDuration' as keyof T // Changed to match AnalyticsData interface
   } = options || {}
 
   return useMemo(() => {
@@ -504,4 +533,19 @@ export function useDataFilter<T extends Record<string, unknown>>(
       return true
     })
   }, [data, filters, timestampField, siteField, pageViewsField, uniqueVisitorsField, bounceRateField, sessionDurationField])
+}
+
+// Specialized hook for AnalyticsData with correct field mappings
+export function useAnalyticsDataFilter(
+  data: AnalyticsData[], 
+  filters: FilterState
+): AnalyticsData[] {
+  return useDataFilter(data, filters, {
+    timestampField: 'timestamp',
+    siteField: 'siteName',
+    pageViewsField: 'pageViews',
+    uniqueVisitorsField: 'uniqueVisitors',
+    bounceRateField: 'bounceRate',
+    sessionDurationField: 'avgSessionDuration'
+  })
 }

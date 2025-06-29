@@ -10,10 +10,28 @@ import { useWebSocket } from "@/hooks/use-websocket"
 import { AnalyticsData } from "@/types/analytics"
 import { BarChart3} from "lucide-react"
 import ExportToggle from "@/components/custom/ExportToggle"
+import { 
+  DashboardFilters, 
+  ActiveFilters, 
+  useDataFilter, 
+  FilterState, 
+  defaultFilters 
+} from "@/components/custom/DashboardFilter"
+import { useCallback, useState } from "react"
 
 export default function Page() {
   const {data:siteData,isLoading} = useWebSocket()
-  const latestData: AnalyticsData | undefined = siteData.length > 0 ? siteData[siteData.length - 1] : undefined;
+  const [filters, setFilters] = useState<FilterState>(defaultFilters)
+  const filteredData = useDataFilter(siteData as AnalyticsData[], filters) as AnalyticsData[]
+  const latestData: AnalyticsData | undefined = filteredData.length > 0 ? filteredData[filteredData.length - 1] : undefined
+
+  const handleFiltersChange = useCallback((newFilters: FilterState) => {
+    setFilters(newFilters)
+  }, [])
+
+  const handleUpdateFilters = useCallback((newFilters: Partial<FilterState>) => {
+    setFilters((prev: FilterState) => ({ ...prev, ...newFilters }))
+  }, [])
 
   if (isLoading) {
     return <DashboardLoadingSkeleton />
@@ -21,7 +39,7 @@ export default function Page() {
 
   return (
    <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-start">
+      <div className="flex gap-4 items-start flex-col md:flex-row">
         <div>
             <h2 className="text-2xl font-bold flex items-center space-x-2">
               <BarChart3 className="h-6 w-6" />
@@ -29,7 +47,17 @@ export default function Page() {
             </h2>
             <p>Real time site overview</p>
         </div>
-        <ExportToggle siteData={siteData} latestData={latestData}/>
+        <div className="ms-auto">
+          <ExportToggle siteData={siteData} latestData={latestData}/>
+        </div>
+        <DashboardFilters 
+            onFiltersChange={handleFiltersChange}
+            dataCount={filteredData.length}
+          />
+ <ActiveFilters 
+        filters={filters} 
+        onUpdateFilters={handleUpdateFilters}
+      />
         
       </div>
       
