@@ -71,7 +71,7 @@ export const saveToIndexedDB = async (storeName: string, data: any): Promise<voi
     }
 
     // Wait for transaction to complete
-    await transaction.complete;
+    await transaction.oncomplete;
     
   } catch (error) {
     console.error('Error saving to IndexedDB:', error);
@@ -109,7 +109,7 @@ export const saveToIndexedDBBulk = async (storeName: string, data: any): Promise
     processedData.forEach(item => store.add(item));
     
     // Wait for transaction completion
-    await transaction.complete;
+    await transaction.oncomplete;
     
   } catch (error) {
     console.error('Error saving to IndexedDB:', error);
