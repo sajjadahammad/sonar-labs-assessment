@@ -5,6 +5,8 @@ import DashboardLoadingSkeleton from "@/components/loadings/DashboardLoading";
 
 export default function Sunburst() {
     const {data:siteData,isLoading} = useWebSocket()
+
+    const latestData = siteData[siteData.length - 1];
     
     if (isLoading) {
         return <DashboardLoadingSkeleton />
@@ -12,7 +14,7 @@ export default function Sunburst() {
     
     return (
         <div>
-            <SunburstVisualization data={siteData}/>
+            <SunburstVisualization data={latestData}/>
         </div>
     )
 }

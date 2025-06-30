@@ -18,13 +18,12 @@ interface D3PartitionNode extends d3.HierarchyRectangularNode<TreeNode> {
   target?: D3PartitionNode
 }
 
-const SunburstVisualization: React.FC<{ data: SiteAnalyticsData[] }> = ({ data }) => {
+const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement>(null)
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
 
   // Transform websocket data into tree structure
   const transformDataToTree = (data: SiteAnalyticsData): TreeNode => {
-    const latestData = data[data.length - 1];
     return {
       name: data.siteName,
       type: "root",
@@ -33,18 +32,18 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData[] }> = ({ data }
           name: "Analytics",
           type: "category",
           children: [
-            { name: "Page Views", value: latestData.pageViews, type: "metric" },
-            { name: "Unique Visitors", value: latestData.uniqueVisitors, type: "metric" },
-            { name: "Bounce Rate", value: Number.parseFloat((latestData.bounceRate * 100).toFixed(1)), type: "metric" },
-            { name: "Avg Session", value: latestData.avgSessionDuration, type: "metric" },
+            { name: "Page Views", value: data.pageViews, type: "metric" },
+            { name: "Unique Visitors", value: data.uniqueVisitors, type: "metric" },
+            { name: "Bounce Rate", value: Number.parseFloat((data.bounceRate * 100).toFixed(1)), type: "metric" },
+            { name: "Avg Session", value: data.avgSessionDuration, type: "metric" },
           ],
         },
         {
           name: "Top Pages",
           type: "category",
-          children: (latestData?.topPages || []).map((page) => ({
-            name: latestData.path,
-            value: latestData.views,
+          children: (data?.topPages || []).map((page) => ({
+            name: page.path,
+            value: page.views,
             type: "page" as const,
           })),
         },
@@ -54,17 +53,17 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData[] }> = ({ data }
           children: [
             {
               name: "Load Time",
-              value: Number.parseFloat((latestData.performanceMetrics?.loadTime || 0).toFixed(2)),
+              value: Number.parseFloat((data.performanceMetrics?.loadTime || 0).toFixed(2)),
               type: "metric",
             },
             {
               name: "First Paint",
-              value: Number.parseFloat((latestData.performanceMetrics?.firstContentfulPaint || 0).toFixed(2)),
+              value: Number.parseFloat((data.performanceMetrics?.firstContentfulPaint || 0).toFixed(2)),
               type: "metric",
             },
             {
               name: "Largest Paint",
-              value: Number.parseFloat((latestData.performanceMetrics?.largestContentfulPaint || 0).toFixed(2)),
+              value: Number.parseFloat((data.performanceMetrics?.largestContentfulPaint || 0).toFixed(2)),
               type: "metric",
             },
           ],
@@ -72,7 +71,7 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData[] }> = ({ data }
         {
           name: "User Flow",
           type: "category",
-          children: (latestData?.userFlow || []).map((flow: { from: string; to: string; count: number }) => ({
+          children: (data?.userFlow || []).map((flow: { from: string; to: string; count: number }) => ({
             name: `${flow.from} → ${flow.to}`,
             value: flow.count,
             type: "flow" as const,
