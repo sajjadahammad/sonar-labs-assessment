@@ -9,11 +9,11 @@ import {
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
-import { AnalyticsData } from "@/types/analytics"
+import { SiteAnalyticsData } from "@/types/socket"
 
 interface ExportToggleProps {
-  siteData: AnalyticsData[];
-  latestData: AnalyticsData | undefined;
+  siteData: SiteAnalyticsData[];
+  latestData: SiteAnalyticsData | undefined;
 }
 
 export default function ExportToggle({siteData, latestData}: ExportToggleProps) {
@@ -51,7 +51,7 @@ export default function ExportToggle({siteData, latestData}: ExportToggleProps) 
         
         // Add historical data table
         if (siteData.length > 0) {
-          const tableData: (string | number)[][] = siteData.map((item: AnalyticsData, index: number) => [
+          const tableData: (string | number)[][] = siteData.map((item: SiteAnalyticsData, index: number) => [
             index + 1,
             item.pageViews?.toString() || 'N/A',
             item.uniqueVisitors?.toString() || 'N/A',
@@ -93,7 +93,7 @@ export default function ExportToggle({siteData, latestData}: ExportToggleProps) 
         if (siteData.length > 0) {
           const historicalData: (string | number)[][] = [
             ['Timestamp', 'Page Views', 'Unique Visitors', 'Bounce Rate (%)', 'Session Duration (s)'],
-            ...siteData.map((item: AnalyticsData) => [
+            ...siteData.map((item: SiteAnalyticsData) => [
               new Date(item.timestamp || Date.now()).toLocaleString(),
               item.pageViews || 0,
               item.uniqueVisitors || 0,

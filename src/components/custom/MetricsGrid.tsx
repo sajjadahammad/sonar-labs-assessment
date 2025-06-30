@@ -1,11 +1,12 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { SiteMetrics, AnalyticsData } from "@/types/analytics";
+import { SiteMetrics } from "@/types/analytics";
+import { SiteAnalyticsData } from "@/types/socket";
 import { TrendingUp, TrendingDown, Users, Eye, Clock, MousePointer } from "lucide-react";
 
 interface MetricsGridProps {
-  latestData: AnalyticsData | undefined;
+  latestData: SiteAnalyticsData | undefined;
 }
 
 export function MetricsGrid({ latestData }: MetricsGridProps) {

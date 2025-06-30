@@ -15,7 +15,7 @@ export interface TopPage {
     count: number;
   }
   
- export interface SiteAnalyticsData {
+  export interface SiteAnalyticsData {
     timestamp: string;
     siteId: string;
     siteName: string;
@@ -23,9 +23,20 @@ export interface TopPage {
     uniqueVisitors: number;
     bounceRate: number;
     avgSessionDuration: number;
-    topPages: TopPage[];
-    performanceMetrics: PerformanceMetrics;
-    userFlow: UserFlow[];
+    topPages: Array<{
+      path: string;
+      views: number;
+    }>;
+    performanceMetrics: {
+      loadTime: number;
+      firstContentfulPaint: number;
+      largestContentfulPaint: number;
+    };
+    userFlow: Array<{
+      from: string;
+      to: string;
+      count: number;
+    }>;
   }
 
 

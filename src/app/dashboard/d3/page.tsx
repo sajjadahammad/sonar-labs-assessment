@@ -12,10 +12,6 @@ export default function Sunburst() {
         return <DashboardLoadingSkeleton />
     }
     
-    // Ensure latestData is of the correct type and handle possible undefined
-    if (!latestData) {
-        return <div>No data available</div>;
-    }
     return (
         <div>
             <SunburstVisualization data={latestData as any} />

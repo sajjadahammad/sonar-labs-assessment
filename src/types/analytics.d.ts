@@ -1,27 +1,4 @@
-export interface AnalyticsData {
-    timestamp: string
-    siteId: string
-    siteName: string
-    pageViews: number
-    uniqueVisitors: number
-    bounceRate: number
-    avgSessionDuration: number
-    topPages: Array<{
-      path: string
-      views: number
-    }>
-    performanceMetrics: {
-      loadTime: number
-      firstContentfulPaint: number
-      largestContentfulPaint: number
-    }
-    userFlow: Array<{
-      from: string
-      to: string
-      count: number
-    }>
-  }
-  
+
   export interface Site {
     id: string
     siteName: string
