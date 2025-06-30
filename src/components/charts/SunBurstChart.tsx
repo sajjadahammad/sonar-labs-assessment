@@ -108,9 +108,6 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) 
   useEffect(() => {
     if (!data || !svgRef.current) return
 
-    // Detect if mobile (screen width <= 600px)
-    const isMobile = typeof window !== "undefined" && window.innerWidth <= 600
-
     const svg = d3.select<SVGSVGElement, unknown>(svgRef.current)
     svg.selectAll("*").remove()
 
@@ -167,11 +164,6 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) 
     // Get descendants and cast to proper type
     const descendants = root.descendants().slice(1) as D3PartitionNode[]
 
-    // Font sizes for main sections (categories) and others, responsive to mobile
-    const categoryFontSize = isMobile ? "11px" : "14px"
-    const otherFontSize = isMobile ? "8px" : "10px"
-    const centerFontSize = isMobile ? "13px" : "16px"
-
     // Create paths for each node
     const path = g
       .append("g")
@@ -203,7 +195,7 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) 
         if (d.depth === 1) return name // Categories show only name
         return value !== undefined ? `${name}: ${value}` : name
       })
-      .style("font-size", (d) => (d.depth === 1 ? categoryFontSize : otherFontSize))
+      .style("font-size", (d) => (d.depth === 1 ? "14px" : "10px"))
       .style("font-weight", (d) => (d.depth === 1 ? "bold" : "normal"))
 
     // Center label showing current focus
@@ -219,7 +211,7 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) 
       .append("text")
       .attr("text-anchor", "middle")
       .attr("dy", "0.35em")
-      .style("font-size", centerFontSize)
+      .style("font-size", "16px")
       .style("font-weight", "bold")
       .style("fill", colorScale("root"))
       .text(root.data.name)
@@ -286,11 +278,9 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) 
           const dNode = d as D3PartitionNode
           return () => labelTransform(dNode)
         })
-        .style("font-size", (d) => (d.depth === 1 ? categoryFontSize : otherFontSize))
 
       // Update center label
       centerLabel.text(p.data.name)
-        .style("font-size", centerFontSize)
     }
 
     function arcVisible(d: D3PartitionNode, useTarget: boolean = false): boolean {
