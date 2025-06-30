@@ -122,11 +122,7 @@ This document outlines the features and implementations that prepare the analyti
 
 ---
 
-For future production deployment, the following upgrades are recommended:
+## ☁️ Vercel Hosting & Deployment
 
-* Replace mock OAuth with real provider (e.g., Google, Auth0).
-* Store encryption keys securely (e.g., in environment-secured secrets).
-* Integrate with a production-grade monitoring tool (e.g., Sentry).
-* Add rate-limiting and audit logging for sensitive actions.
+Since this project uses Next.js, it is hosted on **Vercel** for ease of deployment. Whenever you push changes to the GitHub repository, Vercel automatically builds and deploys the latest version of the app. Vercel also provides options to easily roll back to previous deployments if needed, ensuring safe and rapid production updates.
 
----

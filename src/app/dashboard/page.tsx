@@ -36,13 +36,13 @@ export default function Page() {
     setFilters((prev: FilterState) => ({ ...prev, ...newFilters }))
   }, [])
 
-  useEffect(() => {
-    if (connectionStatus !== 'connected') {
-      toast.info('using mockdata',{
-        position:'top-right'
-      })
-    }
-  }, [connectionStatus])
+  // useEffect(() => {
+  //   if (connectionStatus !== 'connected') {
+  //     toast.info('using mockdata',{
+  //       position:'top-right'
+  //     })
+  //   }
+  // }, [])
 
 
   if (isLoading) {

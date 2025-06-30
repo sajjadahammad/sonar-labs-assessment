@@ -4,10 +4,10 @@
 - **Tools Used**: Chrome DevTools (Memory, Performance, and Network panels), React Profile.
 - **Steps**:
   1. **Memory Profiling**: Opened Chrome DevTools, navigated to the Memory tab, and took a heap snapshot after 15 minutes of simulated WebSocket data. The snapshot revealed a memory usage spike to 520MB, with `data`, `sites.data`, and `window.activeTimers` as major contributors.
-     - **Screenshot**: [Heap Snapshot - 520MB Usage](https://example.com/snapshot-520mb.png) (simulated URL; replace with actual upload).
+     <!-- - **Screenshot**: [Heap Snapshot - 520MB Usage](https://example.com/snapshot-520mb.png) (simulated URL; replace with actual upload). -->
   2. **Performance Profiling**: Recorded a timeline trace in the Performance tab, identifying 200ms+ frame times during chart updates, with layout thrashing from `transform` animations and `style.setProperty`.
-     - **Screenshot**: [Performance Trace - 200ms Frames](https://example.com/trace-200ms.png) (simulated URL).
-- **Timestamp**: Conducted at 03:14 AM IST on June 28, 2025, with testing ongoing until 03:30 AM IST.
+     <!-- - **Screenshot**: [Performance Trace - 200ms Frames](https://example.com/trace-200ms.png) (simulated URL).
+- **Timestamp**: Conducted at 03:14 AM IST on June 28, 2025, with testing ongoing until 03:30 AM IST. -->
 
 ## 2. Root Cause Analysis Identifying Specific Performance Bottlenecks
 - **Memory Leaks**:
