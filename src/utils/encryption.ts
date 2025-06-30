@@ -1,8 +1,5 @@
-// Encryption constants
 const ENCRYPTION_KEY = 'analytics-encryption-key-2024';
 const SENSITIVE_FIELDS = ['siteName', 'siteId'];
-
-// Encryption utility functions
 
 export const generateEncryptionKey = async (): Promise<CryptoKey> => {
     const encoder = new TextEncoder();
@@ -26,9 +23,9 @@ export const generateEncryptionKey = async (): Promise<CryptoKey> => {
       true,
       ['encrypt', 'decrypt']
     );
-  };
-  
-  const encryptData = async (data: any): Promise<string> => {
+};
+
+export const encryptData = async (data: any): Promise<string> => {
     try {
       const key = await generateEncryptionKey();
       const encoder = new TextEncoder();
@@ -52,9 +49,9 @@ export const generateEncryptionKey = async (): Promise<CryptoKey> => {
       console.error('Encryption failed:', error);
       return JSON.stringify(data); // Fallback to plain text
     }
-  };
-  
-   const decryptData = async (encryptedString: string): Promise<any> => {
+};
+
+export const decryptData = async (encryptedString: string): Promise<any> => {
     try {
       const key = await generateEncryptionKey();
       const decoder = new TextDecoder();
@@ -78,9 +75,9 @@ export const generateEncryptionKey = async (): Promise<CryptoKey> => {
       console.error('Decryption failed:', error);
       return null;
     }
-  };
-  
-  export const encryptSensitiveFields = async (data: any): Promise<any> => {
+};
+
+export const encryptSensitiveFields = async (data: any): Promise<any> => {
     const encryptedData = { ...data };
     
     for (const field of SENSITIVE_FIELDS) {
@@ -90,9 +87,9 @@ export const generateEncryptionKey = async (): Promise<CryptoKey> => {
     }
     
     return encryptedData;
-  };
-  
-  export const decryptSensitiveFields = async (data: any): Promise<any> => {
+};
+
+export const decryptSensitiveFields = async (data: any): Promise<any> => {
     const decryptedData = { ...data };
     
     for (const field of SENSITIVE_FIELDS) {
@@ -109,4 +106,4 @@ export const generateEncryptionKey = async (): Promise<CryptoKey> => {
     }
     
     return decryptedData;
-  };
+};
