@@ -18,7 +18,8 @@ import {
   defaultFilters 
 } from "@/components/custom/DashboardFilter"
 import { useCallback, useState } from "react"
-import SunburstVisualization from "@/components/charts/SunBurstChart"
+import { toast } from "sonner"
+  import { useEffect } from "react";
 
 
 export default function Page() {
@@ -35,9 +36,12 @@ export default function Page() {
     setFilters((prev: FilterState) => ({ ...prev, ...newFilters }))
   }, [])
 
+
   if (isLoading) {
     return <DashboardLoadingSkeleton />
   }
+
+ 
 
   return (
    <div className="flex flex-col gap-6">
@@ -53,14 +57,17 @@ export default function Page() {
         <div className="ms-auto">
           <ExportToggle siteData={siteData} latestData={latestData}/>
         </div>
-        <DashboardFilters 
+      
+        <div className="flex justify-end w-full md:w-fit">
+          <DashboardFilters
             onFiltersChange={handleFiltersChange}
             dataCount={filteredData.length}
           />
- <ActiveFilters 
-        filters={filters} 
-        onUpdateFilters={handleUpdateFilters}
-      />
+          <ActiveFilters
+            filters={filters}
+            onUpdateFilters={handleUpdateFilters}
+          />
+        </div>
         
       </div>
       

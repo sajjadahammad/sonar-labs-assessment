@@ -28,13 +28,7 @@ import { Settings2 } from "lucide-react"
 export function SiteHeader() {
     const { connectionStatus } = useWebSocket()
     const { user, signOut, loginAs } = useAuth()
-    const avatars = [
-        { initials: "AL", image: null, backgroundColor: "#e6f3ff", textColor: "#4285f4" },
-        { initials: "", image: "/api/placeholder/40/40", backgroundColor: "#f0f0f0", textColor: "#000000" },
-        { initials: "DT", image: null, backgroundColor: "#e6ffe6", textColor: "#34a853" },
-        { initials: "", image: "/api/placeholder/40/40", backgroundColor: "#f0f0f0", textColor: "#000000" },
-        { initials: "+20", image: null, backgroundColor: "#ffffff", textColor: "#9aa0a6" },
-    ];
+
     return (
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger className="-ml-1" />
@@ -58,21 +52,7 @@ export function SiteHeader() {
             <ConnectionStatus status={connectionStatus} />
             <div className="ml-auto">
                 <ThemeToggle />
-                <div className="inline-flex mr-5">
-                    {avatars.map((avatar, index) => (
-                        <div
-                            key={index}
-                            className="flex -mr-3 first:ml-0"
-                            style={{ zIndex: 5 - index }} >
-                            <Avatar className="size-6 border-2 border-white" style={{ backgroundColor: avatar.backgroundColor }}>
-                                {avatar.image ? (
-                                    <AvatarImage src={avatar.image} alt={`Avatar ${index + 1}`} />
-                                ) : null}
-                                <AvatarFallback style={{ color: avatar.textColor }}>{avatar.initials}</AvatarFallback>
-                            </Avatar>
-                        </div>
-                    ))}
-                </div>
+               
 
 
             </div>

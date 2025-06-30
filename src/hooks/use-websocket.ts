@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import useWebSocketLib, { ReadyState } from 'react-use-websocket';
 import type { AnalyticsData } from '@/types/analytics';
 import { createMockDataStream } from '@/utils/mockDataGenerator';
@@ -29,7 +29,7 @@ export function useWebSocket() {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
   const [error, setError] = useState<string | null>(null);
   const [usingMockData, setUsingMockData] = useState(false);
-
+  const mockCleanupRef = useRef<() => void | null>(null);
   // Initialize data from IndexedDB
   useEffect(() => {
     const initializeData = async () => {
@@ -164,6 +164,9 @@ export function useWebSocket() {
 
   // Start mock data stream as a fallback
   const startMockDataStream = useCallback(() => {
+    if (mockCleanupRef.current) {
+      mockCleanupRef.current(); // cleanup previous
+    }
     setUsingMockData(true);
     setConnectionStatus('connected');
     setError('Using demo data - WebSocket server not available');
@@ -205,8 +208,7 @@ export function useWebSocket() {
       });
     };
 
-    const cleanup = createMockDataStream(handleMockData);
-    return cleanup;
+    mockCleanupRef.current = createMockDataStream(handleMockData);
   }, [pruneData, cacheData]);
 
   useEffect(() => {
@@ -217,27 +219,38 @@ export function useWebSocket() {
   
     return () => clearInterval(interval); // Clean up on unmount
   }, []);
+
+  const stopMockDataStream = useCallback(() => {
+    if (mockCleanupRef.current) {
+      mockCleanupRef.current();
+      mockCleanupRef.current = null;
+    }
+    setUsingMockData(false);
+  }, []);
   
 
   // Manage mock data fallback and cleanup
   useEffect(() => {
     let cleanup: (() => void) | undefined;
-
+  
     if (readyState !== ReadyState.OPEN && !usingMockData) {
       console.log('Starting mock data stream - WebSocket not connected');
-      cleanup = startMockDataStream();
-    } else if (readyState === ReadyState.OPEN && usingMockData && cleanup) {
-      cleanup();
-      setUsingMockData(false);
+      cleanup = startMockDataStream(); // ✅ actually start the mock stream
     }
-
+  
+    if (readyState === ReadyState.OPEN && usingMockData) {
+      console.log('WebSocket connected - stopping mock data stream');
+      stopMockDataStream(); // ✅ stop mock stream
+    }
+  
     return () => {
       if (cleanup) {
         console.log('Cleaning up mock data stream');
         cleanup();
       }
     };
-  }, [readyState, usingMockData, startMockDataStream]);
+  }, [readyState, usingMockData, startMockDataStream, stopMockDataStream]);
+  
 
   // Memoized loading state
   const isLoading = useMemo(() => 
