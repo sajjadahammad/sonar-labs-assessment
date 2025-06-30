@@ -14,7 +14,7 @@ export default function Sunburst() {
     
     return (
         <div>
-            <SunburstVisualization data={latestData as any} />
+            <SunburstVisualization data={latestData}/>
         </div>
     )
 }
