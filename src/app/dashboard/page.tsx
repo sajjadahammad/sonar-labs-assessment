@@ -18,7 +18,8 @@ import {
   defaultFilters 
 } from "@/components/custom/DashboardFilter"
 import { useCallback, useState } from "react"
-import TreeVisualization from "@/components/charts/TidyTree"
+import SunburstVisualization from "@/components/charts/SunBurstChart"
+
 
 export default function Page() {
   const {data:siteData,isLoading} = useWebSocket()
@@ -40,7 +41,7 @@ export default function Page() {
 
   return (
    <div className="flex flex-col gap-6">
-    <TreeVisualization data={siteData}/>
+ 
       <div className="flex gap-4 items-start flex-col md:flex-row">
         <div>
             <h2 className="text-2xl font-bold flex items-center space-x-2">

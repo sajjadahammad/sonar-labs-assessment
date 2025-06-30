@@ -23,7 +23,8 @@ import {
   Zap,
   GalleryVerticalEnd,
   Users,
-  Handshake
+  Handshake,
+  ChartArea
 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth";
 import type { Role } from "@/store/features/authSlice";
@@ -36,7 +37,8 @@ const iconMap: Record<string, React.ElementType> = {
   settings: Settings,
   zap: Zap,
   user:Users,
-  collaboration:Handshake
+  collaboration:Handshake,
+  chartarea:ChartArea
 }
 
 // This is sample data.
@@ -57,6 +59,12 @@ const data = {
           title: "Performance",
           url: "/dashboard/performance",
           icon: "performance",
+          roles: ["admin", "analyst"], // Admin and analyst only
+        },
+        {
+          title: "D3",
+          url: "/dashboard/d3",
+          icon: "chartarea",
           roles: ["admin", "analyst"], // Admin and analyst only
         },
         // {
