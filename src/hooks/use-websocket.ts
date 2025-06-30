@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import useWebSocketLib, { ReadyState } from 'react-use-websocket';
 import type { AnalyticsData } from '@/types/analytics';
 import { createMockDataStream } from '@/utils/mockDataGenerator';
-import { loadFromIndexedDB, saveToIndexedDB } from '@/utils/indexDB';
+import { loadFromIndexedDB, pruneOldData, saveToIndexedDB } from '@/utils/indexDB';
 
 // Define a type for site data with analytics history
 type SiteWithAnalytics = {
@@ -208,6 +208,16 @@ export function useWebSocket() {
     const cleanup = createMockDataStream(handleMockData);
     return cleanup;
   }, [pruneData, cacheData]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      pruneOldData(DATA_STORE);
+      pruneOldData(SITES_STORE);
+    }, 5 * 60 * 1000); // Prune every 5 minutes
+  
+    return () => clearInterval(interval); // Clean up on unmount
+  }, []);
+  
 
   // Manage mock data fallback and cleanup
   useEffect(() => {
