@@ -6,11 +6,13 @@ import * as d3 from "d3"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { SiteAnalyticsData } from "@/types/socket"
 
+type TreeNodeType = "root" | "category" | "metric" | "page" | "flow"
+
 interface TreeNode {
   name: string
   value?: number | string
   children?: TreeNode[]
-  type: "root" | "category" | "metric" | "page" | "flow"
+  type: TreeNodeType
 }
 
 interface D3PartitionNode extends d3.HierarchyRectangularNode<TreeNode> {
@@ -24,60 +26,81 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) 
 
   // Transform websocket data into tree structure
   const transformDataToTree = (data: SiteAnalyticsData): TreeNode => {
+    // Helper to ensure children are TreeNode[]
+    const toMetricNode = (name: string, value: number | string, type: TreeNodeType): TreeNode => ({
+      name,
+      value,
+      type,
+    })
+
+    const analyticsChildren: TreeNode[] = [
+      toMetricNode("Page Views", data.pageViews, "metric"),
+      toMetricNode("Unique Visitors", data.uniqueVisitors, "metric"),
+      toMetricNode("Bounce Rate", Number.parseFloat((data.bounceRate * 100).toFixed(1)), "metric"),
+      toMetricNode("Avg Session", data.avgSessionDuration, "metric"),
+    ]
+
+    const topPagesChildren: TreeNode[] = (data?.topPages || []).map((page) =>
+      toMetricNode(page.path, page.views, "page")
+    )
+
+    const performanceChildren: TreeNode[] = [
+      toMetricNode(
+        "Load Time",
+        Number.parseFloat((data.performanceMetrics?.loadTime || 0).toFixed(2)),
+        "metric"
+      ),
+      toMetricNode(
+        "First Paint",
+        Number.parseFloat((data.performanceMetrics?.firstContentfulPaint || 0).toFixed(2)),
+        "metric"
+      ),
+      toMetricNode(
+        "Largest Paint",
+        Number.parseFloat((data.performanceMetrics?.largestContentfulPaint || 0).toFixed(2)),
+        "metric"
+      ),
+    ]
+
+    const userFlowChildren: TreeNode[] = (data?.userFlow || []).map((flow: { from: string; to: string; count: number }) =>
+      toMetricNode(`${flow.from} → ${flow.to}`, flow.count, "flow")
+    )
+
+    // Only add categories if they have children, and ensure each is a TreeNode
+    const categories: TreeNode[] = []
+    if (analyticsChildren.length > 0) {
+      categories.push({
+        name: "Analytics",
+        type: "category",
+        children: analyticsChildren,
+      })
+    }
+    if (topPagesChildren.length > 0) {
+      categories.push({
+        name: "Top Pages",
+        type: "category",
+        children: topPagesChildren,
+      })
+    }
+    if (performanceChildren.length > 0) {
+      categories.push({
+        name: "Performance",
+        type: "category",
+        children: performanceChildren,
+      })
+    }
+    if (userFlowChildren.length > 0) {
+      categories.push({
+        name: "User Flow",
+        type: "category",
+        children: userFlowChildren,
+      })
+    }
+
     return {
       name: data.siteName,
       type: "root",
-      children: [
-        {
-          name: "Analytics",
-          type: "category",
-          children: [
-            { name: "Page Views", value: data.pageViews, type: "metric" },
-            { name: "Unique Visitors", value: data.uniqueVisitors, type: "metric" },
-            { name: "Bounce Rate", value: Number.parseFloat((data.bounceRate * 100).toFixed(1)), type: "metric" },
-            { name: "Avg Session", value: data.avgSessionDuration, type: "metric" },
-          ],
-        },
-        {
-          name: "Top Pages",
-          type: "category",
-          children: (data?.topPages || []).map((page) => ({
-            name: page.path,
-            value: page.views,
-            type: "page" as const,
-          })),
-        },
-        {
-          name: "Performance",
-          type: "category",
-          children: [
-            {
-              name: "Load Time",
-              value: Number.parseFloat((data.performanceMetrics?.loadTime || 0).toFixed(2)),
-              type: "metric",
-            },
-            {
-              name: "First Paint",
-              value: Number.parseFloat((data.performanceMetrics?.firstContentfulPaint || 0).toFixed(2)),
-              type: "metric",
-            },
-            {
-              name: "Largest Paint",
-              value: Number.parseFloat((data.performanceMetrics?.largestContentfulPaint || 0).toFixed(2)),
-              type: "metric",
-            },
-          ],
-        },
-        {
-          name: "User Flow",
-          type: "category",
-          children: (data?.userFlow || []).map((flow: { from: string; to: string; count: number }) => ({
-            name: `${flow.from} → ${flow.to}`,
-            value: flow.count,
-            type: "flow" as const,
-          })),
-        },
-      ].filter((category) => category.children && category.children.length > 0),
+      children: categories.length > 0 ? categories : undefined,
     }
   }
 
@@ -136,7 +159,7 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) 
       .join("path")
       .attr("fill", (d) => {
         // Fix: Use the actual node type instead of going back to parent
-        return colorScale(d.data.type as "root" | "category" | "metric" | "page" | "flow")
+        return colorScale(d.data.type as TreeNodeType)
       })
       .attr("fill-opacity", (d) => (arcVisible(d.current!) ? (d.children ? 0.6 : 0.4) : 0))
       .attr("pointer-events", (d) => (arcVisible(d.current!) ? "auto" : "none"))
