@@ -20,6 +20,8 @@ import {
 import { useCallback, useState } from "react"
 import { toast } from "sonner"
 import { useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth"
+import { useRouter } from "next/navigation"
 
 
 export default function Page() {
@@ -27,6 +29,18 @@ export default function Page() {
   const [filters, setFilters] = useState<FilterState>(defaultFilters)
   const filteredData = useDataFilter(siteData as AnalyticsData[], filters) as AnalyticsData[]
   const latestData: AnalyticsData | undefined = filteredData.length > 0 ? filteredData[filteredData.length - 1] : undefined
+  const { isAuthenticated, isLoading:isAuthLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthLoading) {
+      if (isAuthenticated) {
+        router.push('/dashboard');
+      } else {
+        router.push('/login');
+      }
+    }
+  }, [isAuthenticated, isAuthLoading, router]);
 
   const handleFiltersChange = useCallback((newFilters: FilterState) => {
     setFilters(newFilters)

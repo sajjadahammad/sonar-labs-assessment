@@ -4,7 +4,6 @@ const DB_NAME = 'AnalyticsDB';
 const DB_VERSION = 1;
 const PRUNE_INTERVAL = 60 * 60 * 1000; // 1 hour
 
-const SENSITIVE_FIELDS = ['siteName', 'siteId'];
 
 const initDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
