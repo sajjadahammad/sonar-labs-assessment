@@ -235,9 +235,9 @@ export function useWebSocket() {
   
     if (readyState !== ReadyState.OPEN && !usingMockData) {
       console.log('Starting mock data stream - WebSocket not connected');
-      cleanup = startMockDataStream(); // ✅ actually start the mock stream
+      cleanup = startMockDataStream ?? undefined; // Fix: assign function, not result
     }
-  
+
     if (readyState === ReadyState.OPEN && usingMockData) {
       console.log('WebSocket connected - stopping mock data stream');
       stopMockDataStream(); // ✅ stop mock stream

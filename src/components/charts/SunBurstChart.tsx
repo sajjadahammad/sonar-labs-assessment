@@ -15,6 +15,7 @@ interface TreeNode {
   type: TreeNodeType
 }
 
+// Properly extend the D3 hierarchy node with partition properties
 interface D3PartitionNode extends d3.HierarchyRectangularNode<TreeNode> {
   current?: D3PartitionNode
   target?: D3PartitionNode
@@ -22,7 +23,7 @@ interface D3PartitionNode extends d3.HierarchyRectangularNode<TreeNode> {
 
 const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement>(null)
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
+  const [dimensions, setDimensions] = useState<{ width: number; height: number }>({ width: 800, height: 600 })
 
   // Transform websocket data into tree structure
   const transformDataToTree = (data: SiteAnalyticsData): TreeNode => {
@@ -107,7 +108,7 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) 
   useEffect(() => {
     if (!data || !svgRef.current) return
 
-    const svg = d3.select(svgRef.current)
+    const svg = d3.select<SVGSVGElement, unknown>(svgRef.current)
     svg.selectAll("*").remove()
 
     const width = Math.min(dimensions.width, dimensions.height)
@@ -123,47 +124,56 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) 
 
     // Color scale for different node types
     const colorScale = d3
-      .scaleOrdinal<string>()
+      .scaleOrdinal<TreeNodeType, string>()
       .domain(["root", "category", "metric", "page", "flow"])
       .range(["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"])
 
     // Create hierarchy and partition layout
     const treeData = transformDataToTree(data)
-    const root = d3
-      .hierarchy(treeData)
+    const hierarchyRoot = d3
+      .hierarchy<TreeNode>(treeData)
       .sum((d) => (d.value ? (typeof d.value === "number" ? d.value : 1) : 1))
-      .sort((a, b) => (b.value || 0) - (a.value || 0))
+      .sort((a, b) => ((b.value ?? 0) - (a.value ?? 0)))
 
-    const partition = d3.partition<TreeNode>().size([2 * Math.PI, root.height + 1])
+    const partition = d3.partition<TreeNode>().size([2 * Math.PI, hierarchyRoot.height + 1])
 
-    partition(root)
+    // Apply partition layout - this adds x0, x1, y0, y1 properties
+    const root = partition(hierarchyRoot) as D3PartitionNode
 
-    // Current focus node
-    root.each((d: any) => (d.current = d))
+    // Current focus node - initialize current property for all nodes
+    root.each((d) => {
+      const partitionNode = d as D3PartitionNode
+      partitionNode.current = {
+        x0: partitionNode.x0,
+        x1: partitionNode.x1,
+        y0: partitionNode.y0,
+        y1: partitionNode.y1,
+      } as D3PartitionNode
+    })
 
     // Arc generator
     const arc = d3
       .arc<D3PartitionNode>()
-      .startAngle((d) => d.x0)
-      .endAngle((d) => d.x1)
-      .padAngle((d) => Math.min((d.x1 - d.x0) / 2, 0.005))
+      .startAngle((d) => d.current?.x0 ?? d.x0)
+      .endAngle((d) => d.current?.x1 ?? d.x1)
+      .padAngle((d) => Math.min(((d.current?.x1 ?? d.x1) - (d.current?.x0 ?? d.x0)) / 2, 0.005))
       .padRadius(radius * 1.5)
-      .innerRadius((d) => d.y0 * radius)
-      .outerRadius((d) => Math.max(d.y0 * radius, d.y1 * radius - 1))
+      .innerRadius((d) => (d.current?.y0 ?? d.y0) * radius)
+      .outerRadius((d) => Math.max((d.current?.y0 ?? d.y0) * radius, ((d.current?.y1 ?? d.y1) * radius) - 1))
+
+    // Get descendants and cast to proper type
+    const descendants = root.descendants().slice(1) as D3PartitionNode[]
 
     // Create paths for each node
     const path = g
       .append("g")
-      .selectAll("path")
-      .data(root.descendants().slice(1))
+      .selectAll<SVGPathElement, D3PartitionNode>("path")
+      .data(descendants)
       .join("path")
-      .attr("fill", (d) => {
-        // Fix: Use the actual node type instead of going back to parent
-        return colorScale(d.data.type as TreeNodeType)
-      })
-      .attr("fill-opacity", (d) => (arcVisible(d.current!) ? (d.children ? 0.6 : 0.4) : 0))
-      .attr("pointer-events", (d) => (arcVisible(d.current!) ? "auto" : "none"))
-      .attr("d", (d) => arc(d.current!))
+      .attr("fill", (d) => colorScale(d.data.type))
+      .attr("fill-opacity", (d) => (arcVisible(d) ? (d.children ? 0.6 : 0.4) : 0))
+      .attr("pointer-events", (d) => (arcVisible(d) ? "auto" : "none"))
+      .attr("d", (d) => arc(d))
       .style("cursor", "pointer")
       .on("click", clicked)
 
@@ -173,12 +183,12 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) 
       .attr("pointer-events", "none")
       .attr("text-anchor", "middle")
       .style("user-select", "none")
-      .selectAll("text")
-      .data(root.descendants().slice(1))
+      .selectAll<SVGTextElement, D3PartitionNode>("text")
+      .data(descendants)
       .join("text")
       .attr("dy", "0.35em")
-      .attr("fill-opacity", (d) => +labelVisible(d.current!))
-      .attr("transform", (d) => labelTransform(d.current!))
+      .attr("fill-opacity", (d) => +labelVisible(d))
+      .attr("transform", (d) => labelTransform(d))
       .text((d) => {
         const name = d.data.name
         const value = d.data.value
@@ -207,58 +217,86 @@ const SunburstVisualization: React.FC<{ data: SiteAnalyticsData }> = ({ data }) 
       .text(root.data.name)
 
     // Click handler
-    function clicked(event: any, p: D3PartitionNode) {
-      parent.datum(p.parent || root)
+    function clicked(event: MouseEvent, p: D3PartitionNode) {
+      const parentNode = (p.parent as D3PartitionNode) || root
+      parent.datum(parentNode)
 
-      root.each(
-        (d: any) =>
-          (d.target = {
-            x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
-            x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
-            y0: Math.max(0, d.y0 - p.depth),
-            y1: Math.max(0, d.y1 - p.depth),
-          }),
-      )
+      root.each((d) => {
+        const dNode = d as D3PartitionNode;
+        dNode.target = {
+          x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          y0: Math.max(0, d.y0 - p.depth),
+          y1: Math.max(0, d.y1 - p.depth),
+        } as D3PartitionNode;
+      });
 
-      const t = g.transition().duration(750)
+      const t = path.transition().duration(750);
 
       // Transition the data on all arcs
       path
-        .transition(t)
-        .tween("data", (d) => {
-          const i = d3.interpolate(d.current!, d.target!)
-          return (t) => (d.current = i(t))
+        .transition(t as any)
+        .tween("data", function (this: SVGPathElement, d) {
+          const dNode = d as D3PartitionNode
+          const current = dNode.current!
+          const target = dNode.target!
+          const i = d3.interpolate(current, target)
+          return function (t: number) {
+            dNode.current = i(t) as D3PartitionNode
+          }
         })
         .filter(function (d) {
-          return +(this as any).getAttribute("fill-opacity") || arcVisible(d.target!)
+          const dNode = d as D3PartitionNode
+          const currentOpacity = (this as SVGPathElement).getAttribute("fill-opacity")
+          return Boolean(currentOpacity && parseFloat(currentOpacity) > 0) || arcVisible(dNode, true)
         })
-        .attr("fill-opacity", (d) => (arcVisible(d.target!) ? (d.children ? 0.6 : 0.4) : 0))
-        .attr("pointer-events", (d) => (arcVisible(d.target!) ? "auto" : "none"))
-        .attrTween("d", (d) => () => arc(d.current!))
+        .attr("fill-opacity", (d) => {
+          const dNode = d as D3PartitionNode
+          return arcVisible(dNode, true) ? (dNode.children ? 0.6 : 0.4) : 0
+        })
+        .attr("pointer-events", (d) => {
+          const dNode = d as D3PartitionNode
+          return arcVisible(dNode, true) ? "auto" : "none"
+        })
+        .attrTween("d", function (d) {
+          const dNode = d as D3PartitionNode
+          return () => arc(dNode) ?? ""
+        })
 
       label
         .filter(function (d) {
-          return +(this as any).getAttribute("fill-opacity") || labelVisible(d.target!)
+          const dNode = d as D3PartitionNode
+          const currentOpacity = (this as SVGTextElement).getAttribute("fill-opacity")
+          return Boolean(currentOpacity && parseFloat(currentOpacity) > 0) || labelVisible(dNode, true)
         })
-        .transition(t)
-        .attr("fill-opacity", (d) => +labelVisible(d.target!))
-        .attrTween("transform", (d) => () => labelTransform(d.current!))
+        .transition(t as any)
+        .attr("fill-opacity", (d) => {
+          const dNode = d as D3PartitionNode
+          return +labelVisible(dNode, true)
+        })
+        .attrTween("transform", function (d) {
+          const dNode = d as D3PartitionNode
+          return () => labelTransform(dNode)
+        })
 
       // Update center label
       centerLabel.text(p.data.name)
     }
 
-    function arcVisible(d: D3PartitionNode) {
-      return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0
+    function arcVisible(d: D3PartitionNode, useTarget: boolean = false): boolean {
+      const node = useTarget && d.target ? d.target : (d.current || d)
+      return node.y1 <= 3 && node.y0 >= 1 && node.x1 > node.x0
     }
 
-    function labelVisible(d: D3PartitionNode) {
-      return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03
+    function labelVisible(d: D3PartitionNode, useTarget: boolean = false): boolean {
+      const node = useTarget && d.target ? d.target : (d.current || d)
+      return node.y1 <= 3 && node.y0 >= 1 && (node.y1 - node.y0) * (node.x1 - node.x0) > 0.03
     }
 
-    function labelTransform(d: D3PartitionNode) {
-      const x = (((d.x0 + d.x1) / 2) * 180) / Math.PI
-      const y = ((d.y0 + d.y1) / 2) * radius
+    function labelTransform(d: D3PartitionNode): string {
+      const node = d.current || d
+      const x = (((node.x0 + node.x1) / 2) * 180) / Math.PI
+      const y = ((node.y0 + node.y1) / 2) * radius
       return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`
     }
   }, [data, dimensions])
