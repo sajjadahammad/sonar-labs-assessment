@@ -8,22 +8,22 @@ import DashboardLoadingSkeleton from "@/components/loadings/DashboardLoading"
 
 import { useWebSocket } from "@/hooks/use-websocket"
 import { AnalyticsData } from "@/types/analytics"
-import { BarChart3} from "lucide-react"
+import { BarChart3 } from "lucide-react"
 import ExportToggle from "@/components/custom/ExportToggle"
-import { 
-  DashboardFilters, 
-  ActiveFilters, 
-  useDataFilter, 
-  FilterState, 
-  defaultFilters 
+import {
+  DashboardFilters,
+  ActiveFilters,
+  useDataFilter,
+  FilterState,
+  defaultFilters
 } from "@/components/custom/DashboardFilter"
 import { useCallback, useState } from "react"
 import { toast } from "sonner"
-  import { useEffect } from "react";
+import { useEffect } from "react";
 
 
 export default function Page() {
-  const {data:siteData,isLoading} = useWebSocket()
+  const { data: siteData, isLoading, connectionStatus } = useWebSocket()
   const [filters, setFilters] = useState<FilterState>(defaultFilters)
   const filteredData = useDataFilter(siteData as AnalyticsData[], filters) as AnalyticsData[]
   const latestData: AnalyticsData | undefined = filteredData.length > 0 ? filteredData[filteredData.length - 1] : undefined
@@ -36,28 +36,36 @@ export default function Page() {
     setFilters((prev: FilterState) => ({ ...prev, ...newFilters }))
   }, [])
 
+  useEffect(() => {
+    if (connectionStatus !== 'connected') {
+      toast.info('using mockdata',{
+        position:'top-right'
+      })
+    }
+  }, [connectionStatus])
+
 
   if (isLoading) {
     return <DashboardLoadingSkeleton />
   }
 
- 
+
 
   return (
-   <div className="flex flex-col gap-6">
- 
+    <div className="flex flex-col gap-6">
+
       <div className="flex gap-4 items-start flex-col md:flex-row">
         <div>
-            <h2 className="text-2xl font-bold flex items-center space-x-2">
-              <BarChart3 className="h-6 w-6" />
-              <span>Platform Overview</span>
-            </h2>
-            <p>Real time site overview</p>
+          <h2 className="text-2xl font-bold flex items-center space-x-2">
+            <BarChart3 className="h-6 w-6" />
+            <span>Platform Overview</span>
+          </h2>
+          <p>Real time site overview</p>
         </div>
         <div className="ms-auto">
-          <ExportToggle siteData={siteData} latestData={latestData}/>
+          <ExportToggle siteData={siteData} latestData={latestData} />
         </div>
-      
+
         <div className="flex justify-end w-full md:w-fit">
           <DashboardFilters
             onFiltersChange={handleFiltersChange}
@@ -68,11 +76,11 @@ export default function Page() {
             onUpdateFilters={handleUpdateFilters}
           />
         </div>
-        
+
       </div>
-      
-      <MetricsGrid latestData={latestData}/>
-     
+
+      <MetricsGrid latestData={latestData} />
+
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <Card className="border-0 shadow-lg bg-card/50 backdrop-blur">
           <CardHeader>
@@ -80,7 +88,7 @@ export default function Page() {
             <CardDescription>Live page views across all monitored sites</CardDescription>
           </CardHeader>
           <CardContent>
-          <RealTimeChart data={filteredData} error={null}/>
+            <RealTimeChart data={filteredData} error={null} />
           </CardContent>
         </Card>
         <Card className="border-0 shadow-lg bg-card/50 backdrop-blur">
@@ -89,19 +97,19 @@ export default function Page() {
             <CardDescription>Average performance metrics across sites</CardDescription>
           </CardHeader>
           <CardContent>
-            <PerformanceChart data={filteredData}  error={null} />
+            <PerformanceChart data={filteredData} error={null} />
           </CardContent>
         </Card>
       </div>
       <Card className="border-0 shadow-lg bg-card/50 backdrop-blur">
-          <CardHeader>
-            <CardTitle>User Flow</CardTitle>
-            <CardDescription>User flow across all monitored sites</CardDescription>
-          </CardHeader>
-          <CardContent>
-          <UserFlowChart data={filteredData}  error={null}/>
-          </CardContent>
-        </Card>
-   </div>
+        <CardHeader>
+          <CardTitle>User Flow</CardTitle>
+          <CardDescription>User flow across all monitored sites</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <UserFlowChart data={filteredData} error={null} />
+        </CardContent>
+      </Card>
+    </div>
   )
 }
