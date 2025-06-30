@@ -144,7 +144,6 @@ self.onmessage = async (e) => {
   const { action, payload, id } = e.data;
   if (handlers[action as keyof typeof handlers]) {
     try {
-      // @ts-ignore
       const result = await handlers[action as keyof typeof handlers](payload);
       self.postMessage({ id, result });
     } catch (error: any) {
