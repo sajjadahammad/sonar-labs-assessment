@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import DashboardLoadingSkeleton from "@/components/loadings/DashboardLoading"
 
 import { useWebSocket } from "@/hooks/use-websocket"
-import { AnalyticsData } from "@/types/analytics"
 import { BarChart3 } from "lucide-react"
 import ExportToggle from "@/components/custom/ExportToggle"
 import {
@@ -18,17 +17,17 @@ import {
   defaultFilters
 } from "@/components/custom/DashboardFilter"
 import { useCallback, useState } from "react"
-import { toast } from "sonner"
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
+import { SiteAnalyticsData } from "@/types/socket"
 
 
 export default function Page() {
   const { data: siteData, isLoading, connectionStatus } = useWebSocket()
   const [filters, setFilters] = useState<FilterState>(defaultFilters)
-  const filteredData = useDataFilter(siteData as AnalyticsData[], filters) as AnalyticsData[]
-  const latestData: AnalyticsData | undefined = filteredData.length > 0 ? filteredData[filteredData.length - 1] : undefined
+  const filteredData = useDataFilter(siteData as SiteAnalyticsData[], filters) as SiteAnalyticsData[]
+  const latestData: SiteAnalyticsData | undefined = filteredData.length > 0 ? filteredData[filteredData.length - 1] : undefined
   const { isAuthenticated, isLoading:isAuthLoading } = useAuth();
   const router = useRouter();
 
