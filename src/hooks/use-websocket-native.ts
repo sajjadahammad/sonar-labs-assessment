@@ -73,7 +73,7 @@ export function useWebSocketNative() {
     }
     setIsLoading(true)
     setUsingMockData(true)
-    setConnectionStatus("connected")
+    setConnectionStatus("disconnected")
     setError("Using demo data - WebSocket server not available")
 
     // Generate initial data
