@@ -1,8 +1,8 @@
 import { renderHook, act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useWebSocket } from '@/hooks/use-websocket';
+import { useWebSocketInternal } from '@/hooks/use-websocket-internal';
 import { ReadyState } from 'react-use-websocket';
-import type { AnalyticsData } from '@/types/analytics';
+import { SiteAnalyticsData } from '@/types/socket';
 
 // Mock IndexedDB functions
 vi.mock('@/utils/indexDB', () => ({
@@ -15,7 +15,7 @@ vi.mock('@/utils/indexDB', () => ({
 const mockCleanup = vi.fn();
 const mockHandler = vi.fn();
 vi.mock('@/utils/mockDataGenerator', () => ({
-  createMockDataStream: vi.fn((handler: (data: AnalyticsData) => void) => {
+  createMockDataStream: vi.fn((handler: (data: SiteAnalyticsData) => void) => {
     mockHandler.mockImplementation(handler);
     return mockCleanup;
   }),
@@ -53,7 +53,7 @@ describe('useWebSocket hook', () => {
     });
   
     it('should initialize with empty data and disconnected status', async () => {
-      const { result } = renderHook(() => useWebSocket());
+      const { result } = renderHook(() => useWebSocketInternal());
   
       expect(result.current.data).toEqual([]);
       expect(result.current.sites).toEqual([]);
@@ -62,7 +62,7 @@ describe('useWebSocket hook', () => {
   
     it('should set connected state when WebSocket is open', async () => {
       readyState = ReadyState.OPEN;
-      const { result } = renderHook(() => useWebSocket());
+      const { result } = renderHook(() => useWebSocketInternal());
   
       expect(result.current.connectionStatus).toBe('connected');
       expect(result.current.usingMockData).toBe(false);
@@ -70,7 +70,7 @@ describe('useWebSocket hook', () => {
   
     it('should use mock data when WebSocket is not open', async () => {
       readyState = ReadyState.CLOSED;
-      const { result } = renderHook(() => useWebSocket());
+      const { result } = renderHook(() => useWebSocketInternal());
   
       // Wait for effect to run
       await act(() => new Promise((r) => setTimeout(r, 200)));
@@ -82,7 +82,7 @@ describe('useWebSocket hook', () => {
     it('should parse incoming WebSocket messages and update data', async () => {
       readyState = ReadyState.OPEN;
   
-      const { result } = renderHook(() => useWebSocket());
+      const { result } = renderHook(() => useWebSocketInternal());
   
       await act(() => new Promise((r) => setTimeout(r, 200)));
   
@@ -94,7 +94,7 @@ describe('useWebSocket hook', () => {
     it('should cache data to IndexedDB', async () => {
       readyState = ReadyState.OPEN;
   
-      const { result } = renderHook(() => useWebSocket());
+      const { result } = renderHook(() => useWebSocketInternal());
   
       await act(() => new Promise((r) => setTimeout(r, 200)));
   
@@ -106,7 +106,7 @@ describe('useWebSocket hook', () => {
       const { pruneOldData } = await import('@/utils/indexDB');
       vi.useFakeTimers();
   
-      renderHook(() => useWebSocket());
+      renderHook(() => useWebSocketInternal());
   
       vi.advanceTimersByTime(5 * 60 * 1000); // 5 minutes
       expect(pruneOldData).toHaveBeenCalled();
@@ -117,7 +117,7 @@ describe('useWebSocket hook', () => {
     it('should clean up mock data stream on unmount', async () => {
       readyState = ReadyState.CLOSED;
   
-      const { unmount } = renderHook(() => useWebSocket());
+      const { unmount } = renderHook(() => useWebSocketInternal());
       await act(() => new Promise((r) => setTimeout(r, 200)));
   
       unmount();

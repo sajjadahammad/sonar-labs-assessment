@@ -1,6 +1,6 @@
 'use client'
 import SunburstVisualization from "@/components/charts/SunBurstChart";
-import { useWebSocket } from "@/hooks/use-websocket";
+import useWebSocket from "@/hooks/use-websocket";
 import DashboardLoadingSkeleton from "@/components/loadings/DashboardLoading";
 
 export default function Sunburst() {

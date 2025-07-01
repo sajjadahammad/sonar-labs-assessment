@@ -6,7 +6,6 @@ import { MetricsGrid } from "@/components/custom/MetricsGrid"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import DashboardLoadingSkeleton from "@/components/loadings/DashboardLoading"
 
-import { useWebSocket } from "@/hooks/use-websocket"
 import { BarChart3 } from "lucide-react"
 import ExportToggle from "@/components/custom/ExportToggle"
 import {
@@ -22,9 +21,13 @@ import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
 import { SiteAnalyticsData } from "@/types/socket"
 
+import useWebSocket from "@/hooks/use-websocket"
+
+
 
 export default function Page() {
-  const { data: siteData, isLoading, connectionStatus } = useWebSocket()
+  // const { data: siteData, isLoading, connectionStatus } = useWebSocket()
+const {data:siteData,isLoading,connectionStatus } = useWebSocket()
   const [filters, setFilters] = useState<FilterState>(defaultFilters)
   const filteredData = useDataFilter(siteData as SiteAnalyticsData[], filters) as SiteAnalyticsData[]
   const latestData: SiteAnalyticsData | undefined = filteredData.length > 0 ? filteredData[filteredData.length - 1] : undefined

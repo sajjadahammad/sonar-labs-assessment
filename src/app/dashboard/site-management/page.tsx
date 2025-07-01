@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { useWebSocket } from "@/hooks/use-websocket"
+import useWebSocket from "@/hooks/use-websocket"
 import { Activity, Globe, ArrowRight, BarChart3, Timer } from "lucide-react"
 import Link from "next/link"
 import { SitesLoading } from "@/components/loadings/SitesLoading"

@@ -21,7 +21,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { ThemeToggle } from "./ThemeToggle"
 import { ConnectionStatus } from "./ConnectionStatus"
-import { useWebSocket } from "@/hooks/use-websocket"
+import useWebSocket from "@/hooks/use-websocket"
 import { useAuth } from "@/hooks/use-auth"
 import { Settings2 } from "lucide-react"
 

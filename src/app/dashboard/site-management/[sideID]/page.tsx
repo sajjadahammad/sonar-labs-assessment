@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Activity, Users, Eye, Clock, TrendingUp, Globe, ArrowRight, Zap, MousePointer, ArrowLeft } from "lucide-react"
-import { useWebSocket } from "@/hooks/use-websocket"
+import useWebSocket from "@/hooks/use-websocket"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { IndividualSiteLoading } from "@/components/loadings/IndividualSiteLoading"
