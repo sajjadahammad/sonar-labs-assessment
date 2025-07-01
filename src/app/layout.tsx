@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "../providers/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner"
 import ReduxProvider from "../providers/ReduxProvider";
+import { Analytics } from "@vercel/analytics/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +42,7 @@ export default function RootLayout({
         <ReduxProvider>
 
             {children}
+            <Analytics />
             <Toaster />
         </ReduxProvider>
           </ThemeProvider>
