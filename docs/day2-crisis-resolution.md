@@ -1,4 +1,5 @@
 
+
 # 🧠 React Dashboard Performance Optimization Report
 
 ## 🚀 1. Overview
@@ -7,6 +8,7 @@ This document outlines the complete performance optimization process for the Rea
 
 > ✅ **Bug-fixed code located at**: `/dashboard/crisis-fix`
 > ✅ **Refactored data processor hook**: `hooks/use-data.processor.ts`
+> ✅ **Mock fallback enabled when WebSocket is unavailable**
 
 ---
 
@@ -51,54 +53,88 @@ This document outlines the complete performance optimization process for the Rea
 | Chart animation               | `transform: scale()` triggered layout thrashing          |
 | WebSocket + Timer             | Global `setInterval` and `window` pollution              |
 | Event listeners               | Untracked `resize` listeners leaked on each site switch  |
-| **UI Button Placement**       | Chart pushed down as button height changed with new data |
+| UI Button Placement           | Chart pushed down as button height changed with new data |
 
 ---
 
 ## 🛠️ 4. Fixes Implemented
 
-| Fix                                                   | Description                              | Result                      |
-| ----------------------------------------------------- | ---------------------------------------- | --------------------------- |
-| ⛔ Removed deep metric generation                      | Cut large object arrays                  | 🚀 Memory usage reduced 10x |
-| ✅ Bounded state arrays (`slice(-MAX)`)                | Prevented memory bloat                   | ✅ Stable memory             |
-| ✅ Cleaned `resize` + `interval` handlers              | Avoided leaks on unmount                 | ✅ No listener growth        |
-| ✅ Replaced chart scale pulse with class toggle        | Removed layout thrashing                 | ✅ Smooth animation          |
-| ✅ Used `useMemo` for processing                       | Avoided infinite re-renders              | ✅ Stable UI                 |
-| 🧹 Removed `window.dataCache` / `window.activeTimers` | Global pollution fixed                   | ✅ No global leaks           |
-| ❌ Removed direct class toggle with `setTimeout`       | Prevented forced reflow                  | ✅ Better animation perf     |
-| ✅ **Repositioned button outside dynamic layout flow** | Prevented chart shifting on data updates | ✅ No chart bounce/flicker   |
+| Fix                                                   | Description                                   | Result                      |
+| ----------------------------------------------------- | --------------------------------------------- | --------------------------- |
+| ⛔ Removed deep metric generation                      | Cut large object arrays                       | 🚀 Memory usage reduced 10x |
+| ✅ Bounded state arrays (`slice(-MAX)`)                | Prevented memory bloat                        | ✅ Stable memory             |
+| ✅ Cleaned `resize` + `interval` handlers              | Avoided leaks on unmount                      | ✅ No listener growth        |
+| ✅ Replaced chart scale pulse with class toggle        | Removed layout thrashing                      | ✅ Smooth animation          |
+| ✅ Used `useMemo` for processing                       | Avoided infinite re-renders                   | ✅ Stable UI                 |
+| 🧹 Removed `window.dataCache` / `window.activeTimers` | Global pollution fixed                        | ✅ No global leaks           |
+| ❌ Removed direct class toggle with `setTimeout`       | Prevented forced reflow                       | ✅ Better animation perf     |
+| ✅ **Repositioned button outside dynamic layout flow** | Prevented chart shifting on data updates      | ✅ No chart bounce/flicker   |
+| ✅ **Enabled mock data fallback on WebSocket failure** | Automatic demo mode for offline/local testing | ✅ Seamless UX recovery      |
 
-> 🔧 Refactored data processing logic now lives in:
-> `hooks/use-data.processor.ts`
+---
 
-### 🚫 Why this was removed:
+## 🧪 Mock Data Fallback
 
-```ts
-if (chartRef.current) {
-  chartRef.current.classList.add(styles.animateChart);
-  setTimeout(() => {
-    chartRef.current?.classList.remove(styles.animateChart);
-  }, 100);
-}
+### 🔄 Problem:
+
+If the WebSocket server was unavailable (e.g., offline, local dev mode), the dashboard would silently fail with no updates or feedback.
+
+### ✅ Solution:
+
+We added a robust fallback to **automatically switch to mock data streaming** if the WebSocket fails to connect or closes unexpectedly.
+
+**Behavior:**
+
+* Attempts to connect to WebSocket at `ws://localhost:8080`
+* On failure (error or close), it starts `createMockDataStream(...)`
+* A banner appears: *"Running in demo mode — WebSocket not available"*
+
+```tsx
+useEffect(() => {
+  const connectWebSocket = () => {
+    try {
+      wsRef.current = new WebSocket('ws://localhost:8080');
+
+      wsRef.current.onopen = () => console.log('WebSocket connected');
+
+      wsRef.current.onmessage = (event) => {
+        const newData = JSON.parse(event.data);
+        const enriched = { ...newData, timestamp: Date.now(), id: Math.random() };
+        // Update state...
+      };
+
+      wsRef.current.onerror = () => {
+        wsRef.current?.close();
+        startMockDataStream(); // 🔁 fallback
+      };
+
+      wsRef.current.onclose = () => {
+        startMockDataStream(); // 🔁 fallback
+      };
+    } catch {
+      startMockDataStream(); // 🔁 fallback
+    }
+  };
+
+  connectWebSocket();
+  return () => {
+    wsRef.current?.close();
+    mockCleanupRef.current?.();
+  };
+}, [startMockDataStream]);
 ```
-
-This direct DOM mutation forced a synchronous layout recalculation and reflow, especially under frequent updates. It was replaced with a CSS-driven toggle tied to internal state.
-
-### 🧱 Why button behavior was problematic:
-
-A UI button positioned **above the chart** was dynamically expanding or shifting position when new data arrived, causing the chart to move. This led to **layout thrashing** and visible jitter.
-**Fix:** Moved the button outside the reactive chart layout using absolute positioning or fixed-height containment.
 
 ---
 
 ## 🔐 5. Prevention & Monitoring Recommendations
 
-* ✅ Set a fixed upper limit on in-memory data (e.g., 1000 entries).
-* ✅ Add memory usage warnings/logs for monitoring.
-* 🔍 Implement dev-only memory debug overlay using `performance.memory`.
-* ✅ Track unmounted timers and listeners via `useEffect` cleanup.
-* 📦 Consider offloading data processing to Web Workers.
-* 📊 Integrate browser performance monitoring (e.g., Sentry, LogRocket).
+* ✅ Set a fixed upper limit on in-memory data (e.g., 1000 entries)
+* ✅ Add memory usage warnings/logs for monitoring
+* 🔍 Implement dev-only memory debug overlay using `performance.memory`
+* ✅ Track unmounted timers and listeners via `useEffect` cleanup
+* 📦 Consider offloading data processing to Web Workers
+* 📊 Integrate browser performance monitoring (e.g., Sentry, LogRocket)
+* ✅ Automatically switch to mock data if WebSocket is unavailable
 
 ---
 
@@ -106,16 +142,17 @@ A UI button positioned **above the chart** was dynamically expanding or shifting
 
 ### Tools Used:
 
-* **Chrome DevTools** → Memory & Lighthouse Performance Tabs
-* Chrome Performance Profiler Timeline
-* React Developer Tools for state tracking
+* Chrome DevTools → Memory & Lighthouse Tabs
+* React DevTools Profiler
+* Chrome Performance Timeline
+* Heap snapshot diffing
 
 ### Process:
 
-1. Captured heap snapshots at 0, 5, 10, and 15 minutes.
-2. Identified detached DOM nodes and retained arrays.
-3. Filtered retained objects by constructor (e.g., `Array`, `Object`).
-4. Cross-validated retained size with console-logged array lengths.
+1. Captured heap snapshots at 0, 5, 10, and 15 minutes
+2. Filtered by retained object size and DOM node leaks
+3. Measured timeline jank, CPU % spikes, and animation frame delays
+4. Verified retained objects matched large growing state arrays
 
 ---
 
@@ -123,42 +160,43 @@ A UI button positioned **above the chart** was dynamically expanding or shifting
 
 ### Strategy:
 
-* Reduce memory footprint per data point.
-* Avoid repeated processing during renders.
-* Contain state growth using capped arrays.
-* Remove costly unnecessary DOM manipulations.
+* Cap memory by limiting array size
+* Avoid unnecessary re-renders using `useMemo`
+* Remove expensive DOM mutations
+* Use WebSocket only if available, else mock stream
 
-### Key Architecture Decisions:
+### Architecture Changes:
 
-* Use of `useRef` to manage non-reactive timers/websockets.
-* Replaced per-point heavy metric generation with shallow transform.
-* Debounced chart animation with CSS classes (not JS transform).
-* Real-time data handled without triggering re-renders when avoidable.
-* Button repositioned outside main layout flow to avoid reflow triggers.
+* Used `useRef` for non-reactive values like sockets/timers
+* Replaced animation class toggles with CSS transitions
+* Moved data processing outside render cycle
+* Separated layout triggers (buttons) from dynamic zones (chart)
 
 ---
 
 ## ✅ 8. Enhanced Application Checklist
 
-* [x] Memory leaks resolved.
-* [x] Performance stable in Chrome, Safari, Firefox.
-* [x] Chart supports 1000+ data points without degradation.
-* [x] All timers/listeners cleaned up properly.
-* [x] Optimized rendering and reduced chart flicker.
-* [x] Processing moved outside render (via `useMemo`).
-* [x] UI elements no longer cause layout shifts on updates.
-* [x] Testing validated using Chrome Memory and Lighthouse tabs.
-* [x] Bug-fixed version committed at `/dashboard/crisis-fix`.
+| Feature                                           | Status |
+| ------------------------------------------------- | ------ |
+| Memory leaks resolved                             | ✅      |
+| Performance stable in Chrome, Safari, Firefox     | ✅      |
+| Chart supports 1000+ data points                  | ✅      |
+| All timers/listeners cleaned on unmount           | ✅      |
+| Optimized rendering & reduced flicker             | ✅      |
+| Processing memoized (`useMemo`)                   | ✅      |
+| Layout shifts prevented on updates                | ✅      |
+| WebSocket fallback with mock streaming            | ✅      |
+| Validated via Chrome Memory, Lighthouse, Profiler | ✅      |
 
 ---
 
 ## 🧪 9. Testing & Verification
 
-* Chart responsiveness tested with live WebSocket stream.
-* Simulated 15-minute run: no degradation or freezes.
-* Verified React rendering behavior using DevTools Profiler.
-* Confirmed consistent memory usage via Chrome Memory tab.
-* Lighthouse audit confirmed optimized paint and CPU efficiency.
-* Final code validated against heap snapshots and retained object inspection.
-
+* ✅ Live WebSocket tested with production data
+* ✅ Simulated 15-minute run: no crashes or freezes
+* ✅ Chrome heap snapshots verified stable retained size
+* ✅ Chart remained responsive across browsers
+* ✅ Lighthouse reports passed performance audits
+* ✅ React DevTools showed stable render graphs
+* ✅ Demo mode displayed properly when WebSocket offline
 

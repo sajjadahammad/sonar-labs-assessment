@@ -39,6 +39,11 @@
   border-radius: 5px;
 }
 
+
+.alertBanner{
+  font-size: 0.7rem;
+  padding-bottom: 1rem;
+}
 @media (prefers-color-scheme: dark) {
   .placeholder {
     background-color: #23272f;
