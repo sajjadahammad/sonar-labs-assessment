@@ -94,5 +94,5 @@
   - **Scalability**: Limits and memoization ensure handling 50+ client variables without degradation.
   - **Stability**: Cleanup prevents crashes, critical for the 1:48 PM IST demo.
   - **Maintainability**: TypeScript and modular design (e.g., `useDataProcessor`) ease future development.
-  - **Trade-Offs**: Reduced historical data depth (e.g., 1000 vs. unlimited) for performance, acceptable given real-time focus.
+  - **Trade-Offs**: Reduced historical data depth (e.g., 1000 vs. unlimited) for performance, acceptable given real-time focus. 
 
