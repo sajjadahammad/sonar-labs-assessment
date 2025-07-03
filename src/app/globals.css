@@ -265,20 +265,3 @@ animation: shimmer 2s infinite;
   }
 }
 
-
-.chart-container {
-  transition: transform 0.1s ease;
-  width:100%;
-  min-width: 300px;
-  max-width: 300px;
-}
-.chart-container:hover {
-  transform: scale(1.02);
-}
-.dashboard > div > div > * {
-  box-shadow: none; /* Removed to prevent thrashing */
-}
-.site-selector button:nth-child(odd),
-.site-selector button:nth-child(even) {
-  width: 100%; /* Simplified to prevent reflow */
-}

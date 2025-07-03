@@ -16,11 +16,7 @@ import {
   defaultFilters
 } from "@/components/custom/DashboardFilter"
 import { useCallback, useState } from "react"
-import { useEffect } from "react";
-import { useAuth } from "@/hooks/use-auth"
-import { useRouter } from "next/navigation"
 import { SiteAnalyticsData } from "@/types/socket"
-
 import useWebSocket from "@/hooks/use-websocket"
 
 
@@ -31,18 +27,7 @@ const {data:siteData,isLoading,connectionStatus } = useWebSocket()
   const [filters, setFilters] = useState<FilterState>(defaultFilters)
   const filteredData = useDataFilter(siteData as SiteAnalyticsData[], filters) as SiteAnalyticsData[]
   const latestData: SiteAnalyticsData | undefined = filteredData.length > 0 ? filteredData[filteredData.length - 1] : undefined
-  const { isAuthenticated, isLoading:isAuthLoading } = useAuth();
-  const router = useRouter();
 
-  useEffect(() => {
-    if (!isAuthLoading) {
-      if (isAuthenticated) {
-        router.push('/dashboard');
-      } else {
-        router.push('/login');
-      }
-    }
-  }, [isAuthenticated, isAuthLoading, router]);
 
   const handleFiltersChange = useCallback((newFilters: FilterState) => {
     setFilters(newFilters)

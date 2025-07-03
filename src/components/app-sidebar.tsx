@@ -24,7 +24,8 @@ import {
   GalleryVerticalEnd,
   Users,
   Handshake,
-  ChartArea
+  ChartArea,
+  ServerCrash
 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth";
 import type { Role } from "@/store/features/authSlice";
@@ -38,7 +39,8 @@ const iconMap: Record<string, React.ElementType> = {
   zap: Zap,
   user:Users,
   collaboration:Handshake,
-  chartarea:ChartArea
+  chartarea:ChartArea,
+  crisis:ServerCrash
 }
 
 // This is sample data.
@@ -84,6 +86,12 @@ const data = {
           url: "/dashboard/site-management",
           icon: "user",
           roles: ["admin"], 
+        },
+        {
+          title: "crisis-resolution",
+          url: "/dashboard/crisis-fix",
+          icon: "crisis",
+          roles: ["admin","analyst", "viewer"], 
         },
         {
           title: "Settings",

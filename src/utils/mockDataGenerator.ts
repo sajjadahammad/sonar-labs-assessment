@@ -46,7 +46,7 @@ export const createMockDataStream = (callback: (data: SiteAnalyticsData) => void
   // Start continuous stream
   const interval = setInterval(() => {
     const data = generateDataPoint();
-    console.log('Mock data point:', data); // Debug log
+    // console.log('Mock data point:', data); // Debug log
     callback(data);
   }, 1500 + Math.random() * 1000); // Match first implementation’s timing
 

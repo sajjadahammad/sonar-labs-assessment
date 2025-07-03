@@ -1,0 +1,48 @@
+.dashboard {
+  padding: 1rem;
+}
+
+.chartContainer {
+  /* transition: transform 0.1s ease;
+  will-change: transform; */
+}
+
+
+.siteSelector{
+  padding-bottom: 2rem;
+}
+
+.siteSelector button {
+  margin-right: 8px;
+  padding-inline: 0.5rem;
+}
+
+.siteSelector .active {
+  background-color: #4caf50;
+  color: white;
+  border-radius: 5px;
+}
+
+.summary {
+  margin-top: 1rem;
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #666;
+  font-size: 1.2rem;
+  background-color: #f9f9f9;
+  border: 1px dashed #ccc;
+  border-radius: 5px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .placeholder {
+    background-color: #23272f;
+    color: #fff;
+    border: 1px dashed #444;
+  }
+}
